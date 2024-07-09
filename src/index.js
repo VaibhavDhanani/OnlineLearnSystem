@@ -7,12 +7,17 @@ dotenv.config({
 })
 
 const PORT = process.env.PORT || 4000;
+const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY || "hello";
 
-connectDB()
+const initialize = async () => { 
+    await connectDB()
     .then(() => {
         app.listen(3000, () => {
             console.log(`Server running on port ${PORT}! ^^`);
         });
     })
     .catch(err => console.log("mongo db connection error: " + err))
+}
+initialize();
 
+export default JWT_SECRET_KEY;

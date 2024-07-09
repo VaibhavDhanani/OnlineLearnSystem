@@ -1,14 +1,18 @@
 import express from 'express';
 import cors from 'cors';
-import healthcheckrouter from './routes/healthroute.js';
+import jwt from 'jsonwebtoken';
+
 import userRouter from './routes/user.routes.js';
 import materialRouter from './routes/material.routes.js';
 import classRouter from './routes/class.routes.js';
 import resourceRouter from './routes/resource.routes.js';
 import lessonRouter from './routes/lesson.routes.js';
+// import bcrypt from 'bcrypt';
 
 const app = express();
 app.use(express.json());
+
+ 
 
 app.use(
     cors({
