@@ -1,6 +1,7 @@
 import { User } from "../models/user.model.js";
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+
 const insertUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(req.body.password, 8)
     .then(function(hash) {

@@ -1,19 +1,18 @@
 import express from 'express';
 import cors from 'cors';
-import jwt from 'jsonwebtoken';
+import { EventEmitter } from 'events';
 
 import userRouter from './routes/user.routes.js';
 import materialRouter from './routes/material.routes.js';
 import classRouter from './routes/class.routes.js';
 import resourceRouter from './routes/resource.routes.js';
 import lessonRouter from './routes/lesson.routes.js';
-// import bcrypt from 'bcrypt';
+import assignmentRouter from './routes/assignment.routes.js';
 
 const app = express();
 app.use(express.json());
-
- 
-
+const emitter = new EventEmitter();
+emitter.setMaxListeners(20);
 app.use(
     cors({
         origin: process.env.CORS_ORIGIN,
@@ -23,14 +22,23 @@ app.use(
 app.use(express.urlencoded({ extended: true}))
 app.use(express.static("public")) // image storage folder
 
+// middleware
+
 // routes
 // app.use("/api/v1",healthcheckrouter);
 app.use("/api/v1",userRouter);
+
 app.use("/api/v1/material",materialRouter);
 app.use("/api/v1/class",classRouter);
 app.use("/api/v1/resource",resourceRouter);
 app.use("/api/v1/lesson",lessonRouter);
+app.use("/api/v1/assignment",assignmentRouter);
 
+// error handling
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ message: 'An unexpected error occurred' });
+  });
 
 // const newUser = new User({
 //     username: 'john_doe',
