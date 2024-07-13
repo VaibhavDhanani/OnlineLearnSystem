@@ -13,6 +13,11 @@ const app = express();
 app.use(express.json());
 const emitter = new EventEmitter();
 emitter.setMaxListeners(20);
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*'); // Allow all origins
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+  });
 app.use(
     cors({
         origin: process.env.CORS_ORIGIN,
@@ -26,7 +31,7 @@ app.use(express.static("public")) // image storage folder
 
 // routes
 // app.use("/api/v1",healthcheckrouter);
-app.use("/api/v1",userRouter);
+app.use("/api/v1/user",userRouter);
 
 app.use("/api/v1/material",materialRouter);
 app.use("/api/v1/class",classRouter);

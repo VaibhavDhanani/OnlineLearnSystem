@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
 const insertUser = async (req, res) => {
+    // console.log(req.body);
+
     const hashedPassword = await bcrypt.hash(req.body.password, 8)
     .then(function(hash) {
         return hash;
@@ -11,7 +13,8 @@ const insertUser = async (req, res) => {
         username: req.body.username,
         email: req.body.email,
         password: hashedPassword.toString(),
-        gender: req.body.gender
+        gender: req.body.gender,
+        type: req.body.type,
     })
     try {
         const newUser = await user.save()
