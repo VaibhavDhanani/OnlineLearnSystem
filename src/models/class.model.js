@@ -1,6 +1,12 @@
 import mongoose,{Schema} from "mongoose";
 
 const classSchema = new Schema({
+    code: {
+        type: "string",
+        required : true,
+        unique : true,
+        trim: true,
+    },
     teacher: {
         type: Schema.Types.ObjectId,
         required: true,

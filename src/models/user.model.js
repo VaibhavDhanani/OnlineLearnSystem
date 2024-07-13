@@ -27,7 +27,11 @@ const userSchema = new Schema({
         required : true,
         enum : ['student','teacher'],
         default :'student'
-    }
+    },
+    classCodes:[{
+        type: String,
+        unique: true,
+    }]
 },
     {timestamps: true}
 );
