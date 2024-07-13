@@ -1,6 +1,7 @@
 import { User } from "../models/user.model.js";
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import { Class } from "../models/class.model.js";
 
 const insertUser = async (req, res) => {
     // console.log(req.body);
@@ -56,7 +57,7 @@ const updateUser = async (req, res) => {
 
 const getUser = async (req, res) => {
     try {
-        const user = await User.find()
+        const user = await User.findById(req.params.id);
         res.status(200).json(user)
     } catch (error) {
         res.status(400).json({
@@ -88,10 +89,34 @@ const validateUser = async (req, res) => {
     
 }
 
+const joinClass = async (req, res) => {
+    const { userId, classCode } = req.body;
+
+  try {
+    const classExists = await Class.findOne({ code: classCode });
+    if (!classExists) {
+      return res.status(404).json({ message: 'Class not found' });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { $addToSet: { classCodes: classCode } },
+      { new: true }
+    );
+
+    res.status(200).json({ message: 'Class joined successfully', user });
+  } catch (error) {
+    res.status(500).json({ message: 'Internal server error', error });
+  }
+}
+
+
+
 export {
     insertUser,
     deleteUser,
     updateUser,
     getUser,
     validateUser,
+    joinClass,
 }
