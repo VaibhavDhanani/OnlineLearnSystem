@@ -35,9 +35,16 @@ app.use(express.static("public")) // image storage folder
 // middleware
 
 // client routes
-app.get('/home', authenticateToken, (req, res) => {
-  res.json({ message: 'Welcome to the dashboard!', user: req.user });
+const handleRoute = (req, res) => {
+  const routePath = req.originalUrl;
+  res.json({ message: `Welcome to ${routePath}`});
+};
+const routes = ['/home', '/home/:subject'];
+
+routes.forEach(route => {
+  app.get(route, handleRoute);
 });
+
 
 
 

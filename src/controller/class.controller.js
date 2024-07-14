@@ -1,16 +1,23 @@
 import { Class } from "../models/class.model.js";
 
-const getClass = async (req, res) => {
+const getClasses = async (req, res) => {
     try {
-        const classes = await Class.find();
-        res.status(200).json(classes);
+      const classCodes = req.body.codes;
+      const classes = await Promise.all(classCodes.map(async (code) => {
+        const reqClass = await Class.findOne({ code });
+        return reqClass;
+      }));
+    //   console.log(classCodes)
+  
+      res.status(200).json(classes);
     } catch (error) {
-        res.status(400).json({
-            success: false,
-            message: error.message
-        });
+      res.status(400).json({
+        success: false,
+        message: error.message,
+      });
     }
-};
+  };
+  
 
 
 const insertClass = async (req, res) => {
@@ -60,4 +67,4 @@ const deleteClass = async (req, res) => {
     }
 };
 
-export {getClass, insertClass,updateClass,deleteClass};
+export {getClasses, insertClass,updateClass,deleteClass};

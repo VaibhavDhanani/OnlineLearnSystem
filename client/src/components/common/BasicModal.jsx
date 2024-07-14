@@ -27,27 +27,40 @@ const BasicModal = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    let success;
     const token = localStorage.getItem('token');
-
-    const res = fetch(`${URL}/user/joinclass`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${user.token}`,
-      },
-      body: JSON.stringify({
-        classCode: classCode,
-        userId: user._id,
-      }),
-    })
-      .then((data) => data.json())
-      .then((data) => (success = data.success));
-    console.log(res);
-    handleClose();
+  
+    try {
+      const response = await fetch(`${URL}/user/joinclass`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          classCode: classCode,
+          userId: user._id,
+        }),
+      });
+  
+      const data = await response.json();
+      const success = data.success;
+  
+      // console.log('Response:', data);
+      // console.log('Success:', response);
+  
+      if (success) {
+        handleClose();
+      } else {
+        // Handle the case when joining the class was not successful
+        alert('Failed to join the class:', data.message);
+      }
+    } catch (error) {
+      console.error('Error joining class:', error);
+    }
   };
+  
 
   return (
     <div>

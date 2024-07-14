@@ -3,11 +3,14 @@ import useFetchWithAuth from "../hooks/UseFetchWithAuth.js";
 import { clientURL } from "../constant.js";
 import Layout from "../components/common/Layout.jsx";
 import Navbar from "../components/Navigation/Navbar.jsx";
-import Classroom from "../components/Classroom/Classroom.jsx";
+import { useParams } from "react-router-dom";
+import ClassLayout from "../components/common/ClassLatout.jsx";
 
-const Home = () => {
-  const { data, error, loading } = useFetchWithAuth(`${clientURL}/home`);
-
+const Class = () => {
+  const subject = useParams().subject;
+  const { data, error, loading } = useFetchWithAuth(
+    `${clientURL}/home/${subject}`
+  );
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
 
@@ -15,13 +18,10 @@ const Home = () => {
     <div>
       <Layout>
         <Navbar />
-        <Classroom />
-        <h1>Main Content</h1>
-        <p>This is where your page content will appear.</p>
+        <ClassLayout />
       </Layout>
-      
     </div>
   );
 };
 
-export default Home;
+export default Class;

@@ -95,7 +95,7 @@ const joinClass = async (req, res) => {
   try {
     const classExists = await Class.findOne({ code: classCode });
     if (!classExists) {
-      return res.status(404).json({ message: 'Class not found' });
+      return res.status(404).json({ message: 'Class not found',success: false });
     }
 
     const user = await User.findByIdAndUpdate(
@@ -104,7 +104,7 @@ const joinClass = async (req, res) => {
       { new: true }
     );
 
-    res.status(200).json({ message: 'Class joined successfully', user });
+    res.status(200).json({ message: 'Class joined successfully', success: true });
   } catch (error) {
     res.status(500).json({ message: 'Internal server error', error });
   }
