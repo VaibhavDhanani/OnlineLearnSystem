@@ -5,11 +5,11 @@ const resourceSchema = new Schema({
         type: String, 
         required : true
     },
-    // lesson: {
-    //     type: Schema.Types.ObjectId,
-    //     required: true,
-    //     ref: 'Lesson'
-    // },
+    lesson: {
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: 'Lesson'
+    },
     videolink: {
         type: String, 
         required: true

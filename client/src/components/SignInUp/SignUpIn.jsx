@@ -76,9 +76,9 @@ const SignUpIn = () => {
   };
 
   return (
-    <div className="login-body">
-      <div className={`container ${isPanelActive ? "right-panel-active" : ""}`}>
-        <div className="form-container sign-up-container">
+    <div className="sui-login-body">
+    <div className={`sui-container ${isPanelActive ? "sui-right-panel-active" : ""}`}>
+      <div className="sui-form-container sui-sign-up-container">
           <form onSubmit={signUp}>
             <h1>Create Account</h1>
             <span>or use your email for registration</span>
@@ -97,34 +97,34 @@ const SignUpIn = () => {
               </option>
               <option value="teacher">Teacher</option>
             </select>
-            <button className="button">Sign Up</button>
+            <button className="sui-button">Sign Up</button>
           </form>
         </div>
-        <div className="form-container sign-in-container">
+        <div className="sui-form-container sui-sign-in-container">
           <form onSubmit={signIn}>
             <h1>Sign in</h1>
             <span>or use your account</span>
             <input type="text" name="username" placeholder="Username" />
             <input type="password" name="password" placeholder="Password" />
             <a href="#">Forgot your password?</a>
-            <button className="button" type="submit">Sign In</button>
+            <button className="sui-button" type="submit">Sign In</button>
           </form>
         </div>
-        <div className="overlay-container">
-          <div className="overlay">
-            <div className="overlay-panel overlay-left">
+        <div className="sui-overlay-container">
+      <div className="sui-overlay">
+        <div className="sui-overlay-panel sui-overlay-left">
               <h1>Welcome Back!</h1>
               <p>
                 To keep connected with us please login with your personal info
               </p>
-              <button className="button ghost" onClick={handleSignIn}>
+              <button className="sui-button sui-ghost" onClick={handleSignIn}>
                 Sign In
               </button>
             </div>
-            <div className="overlay-panel overlay-right">
+            <div className="sui-overlay-panel sui-overlay-right">
               <h1>Hello, Friend!</h1>
               <p>Enter your personal details and start journey with us</p>
-              <button className="button ghost" onClick={handleSignUp}>
+              <button className="sui-button sui-ghost" onClick={handleSignUp}>
                 Sign Up
               </button>
             </div>

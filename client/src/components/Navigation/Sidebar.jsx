@@ -1,66 +1,49 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
-import List from "@mui/material/List";
-import Divider from "@mui/material/Divider";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/Inbox";
-import MailIcon from "@mui/icons-material/Mail";
+import React from "react";
 import { Link } from "react-router-dom";
 
-const drawerWidth = 250;
-
 const Sidebar = () => {
-  const DrawerList = (
-    <div>
-      <List>
-        {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-          <Link to={`/home`}>
-            <ListItem key={text} disablePadding>
-              <ListItemButton>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          </Link>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {["All mail", "Trash", "Spam"].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-    </div>
-  );
+  const menuItems = [
+    { name: "Inbox", icon: "fas fa-inbox", link: "/home" },
+    { name: "Starred", icon: "fas fa-star", link: "/home" },
+    { name: "Send email", icon: "fas fa-paper-plane", link: "/home" },
+    { name: "Drafts", icon: "fas fa-file-alt", link: "/home" },
+  ];
+
+  const otherItems = [
+    { name: "All mail", icon: "fas fa-envelope", link: "#" },
+    { name: "Trash", icon: "fas fa-trash", link: "#" },
+    { name: "Spam", icon: "fas fa-exclamation-circle", link: "#" },
+  ];
+
+  const renderListItems = (items) => {
+    return items.map((item) => (
+      <li key={item.name} className="mb-2">
+        <Link
+          to={item.link}
+          className="flex items-center p-2 hover:bg-gray-700 rounded"
+        >
+          <i className={`${item.icon} mr-3`}></i>
+          <span>{item.name}</span>
+        </Link>
+      </li>
+    ));
+  };
 
   return (
-    <Drawer
-      sx={{
-        width: drawerWidth,
-        flexShrink: 0,
-        "& .MuiDrawer-paper": {
-          width: drawerWidth,
-          boxSizing: "border-box",
-        },
-      }}
-      variant="permanent"
-      anchor="left"
-    >
-      {DrawerList}
-    </Drawer>
+    <div className="w-64 bg-gray-800 text-white overflow-y-auto flex-shrink-0">
+      <nav className="p-4">
+        <ul>
+          <li className="mb-6">
+            <h2 className="text-lg font-semibold">Menu</h2>
+          </li>
+          {renderListItems(menuItems)}
+        </ul>
+
+        <hr className="my-4 border-gray-600" />
+
+        <ul>{renderListItems(otherItems)}</ul>
+      </nav>
+    </div>
   );
 };
 

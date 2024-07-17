@@ -1,45 +1,5 @@
 import React from "react";
-import { useNavigate } from 'react-router-dom';
-import styled from "styled-components";
-
-const CardContainer = styled.div`
-  font-family: "Poppins", sans-serif;
-  background: #2e2e2e;
-  color: #fff;
-  border-radius: 8px;
-  padding: 20px;
-  width: 300px;
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-  }
-`;
-
-const Subject = styled.h3`
-  font-size: 1.5em;
-  margin-bottom: 10px;
-`;
-
-const Description = styled.p`
-  color: #999;
-  margin-bottom: 15px;
-`;
-
-const ExploreButton = styled.button`
-  background: #5b98eb;
-  color: white;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-
-  &:hover {
-    background: #4a7ac7;
-  }
-`;
+import { useNavigate } from "react-router-dom";
 
 const Card = ({ classData }) => {
   const { subject, description } = classData;
@@ -47,20 +7,28 @@ const Card = ({ classData }) => {
 
   const handleExploreClick = () => {
     navigate(`/home/${subject}`);
-  }
+  };
 
   return (
-    <CardContainer>
-      <Subject>{subject}</Subject>
-      <Description>
-        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Doloremque optio repellendus delectus quibusdam accusantium sunt?
-        
-        {/* {description.length > 15 ? `${description.substring(0, 15)}...` : description} */}
-      </Description>
-      <ExploreButton onClick={handleExploreClick}>
-        Explore
-      </ExploreButton>
-    </CardContainer>
+    <div className="group relative overflow-hidden bg-white text-gray-700 shadow-lg rounded-2xl p-6 w-full h-full transform transition duration-500 hover:scale-105 hover:shadow-2xl">
+      <div className="absolute -top-10 -right-10 bg-blue-500 w-24 h-24 rounded-full transform transition-all duration-300 group-hover:scale-150"></div>
+      <div className="relative z-10">
+        <h3 className="text-xl sm:text-2xl font-bold mb-3 transform transition duration-300 group-hover:translate-x-3">
+          {subject}
+        </h3>
+        <p className="text-sm sm:text-base text-gray-600 mb-6 transform transition duration-300 group-hover:translate-x-3">
+          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Doloremque
+          optio repellendus.
+        </p>
+        <button
+          onClick={handleExploreClick}
+          className="bg-blue-500 text-white px-4 sm:px-6 py-2 rounded-full font-semibold transform transition duration-300 hover:bg-blue-600 hover:scale-105 group-hover:translate-x-3"
+        >
+          Explore
+        </button>
+      </div>
+      <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500 transform transition-all duration-300 group-hover:h-2"></div>
+    </div>
   );
 };
 

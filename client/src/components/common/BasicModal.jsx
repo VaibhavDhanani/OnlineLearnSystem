@@ -1,36 +1,19 @@
-import * as React from "react";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import Modal from "@mui/material/Modal";
-import TextField from "@mui/material/TextField";
+import React, { useState } from "react";
 import { useAuth } from "../../hooks/AuthContext.jsx";
 import { URL } from "../../constant.js";
 
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-  borderRadius: "8px",
-};
-
 const BasicModal = () => {
-  const [open, setOpen] = React.useState(false);
-  const [classCode, setClassCode] = React.useState("");
+  const [open, setOpen] = useState(false);
+  const [classCode, setClassCode] = useState("");
   const { user } = useAuth();
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const token = localStorage.getItem('token');
-  
+    const token = localStorage.getItem("token");
+
     try {
       const response = await fetch(`${URL}/user/joinclass`, {
         method: "POST",
@@ -43,86 +26,59 @@ const BasicModal = () => {
           userId: user._id,
         }),
       });
-  
+
       const data = await response.json();
       const success = data.success;
-  
-      // console.log('Response:', data);
-      // console.log('Success:', response);
-  
+
       if (success) {
         handleClose();
       } else {
-        // Handle the case when joining the class was not successful
-        alert('Failed to join the class:', data.message);
+        alert("Failed to join the class: " + data.message);
       }
     } catch (error) {
-      console.error('Error joining class:', error);
+      console.error("Error joining class:", error);
     }
   };
-  
 
   return (
     <div>
-      <Button
+      <button
         onClick={handleOpen}
-        variant="contained"
-        sx={{
-          bgcolor: "white",
-          color: "green",
-          "&:hover": {
-            bgcolor: "green",
-            color: "white",
-          },
-          fontSize: "28px",
-          width: "40px",
-          height: "40px",
-          minWidth: "40px",
-          borderRadius: "50%",
-          p: 0,
-          textTransform: "none",
-          fontWeight: "bold",
-          cursor: "pointer",
-          transition: "all 0.3s ease-in-out",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          lineHeight: 1,
-        }}
+        className="bg-white text-green-500 hover:bg-green-500 hover:text-white text-3xl w-10 h-10 rounded-full p-0 font-bold cursor-pointer transition-all duration-300 flex justify-center items-center leading-none"
       >
         +
-      </Button>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Typography
-            id="modal-modal-title"
-            variant="h6"
-            component="h2"
-            sx={{ mb: 2 }}
-          >
-            Enter Class Code
-          </Typography>
-          <form onSubmit={handleSubmit}>
-            <TextField
-              fullWidth
-              label="Class Code"
-              variant="outlined"
-              value={classCode}
-              onChange={(e) => setClassCode(e.target.value)}
-              sx={{ mb: 2 }}
-              required
-            />
-            <Button type="submit" variant="contained" color="primary" fullWidth>
-              Submit
-            </Button>
-          </form>
-        </Box>
-      </Modal>
+      </button>
+      {open && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-96">
+            <div className="flex justify-between">
+              <h2 className="text-xl font-semibold mb-4">Enter Class Code</h2>
+              <button
+                onClick={handleClose}
+                className="mb-4 text-xl w-6 h-6 text-white hover:text-gray-800 rounded-full bg-red-600"
+              >
+                X
+              </button>
+            </div>
+            <form onSubmit={handleSubmit}>
+              <input
+                type="text"
+                className="w-full p-2 border border-gray-300 rounded mb-4"
+                placeholder="Class Code"
+                value={classCode}
+                onChange={(e) => setClassCode(e.target.value)}
+                required
+              />
+              <button
+                type="submit"
+                className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300"
+              >
+                Submit
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
