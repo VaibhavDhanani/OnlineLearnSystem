@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
                     setUser(userData);
                 } catch (error) {
                     console.error('Error fetching user:', error);
-                    localStorage.removeItem('token'); // Clear invalid token
+                    localStorage.removeItem('token');
                 }
             }
             setLoading(false);

@@ -1,17 +1,31 @@
 import { Class } from "../models/class.model.js"
 import { Material } from "../models/material.model.js"
 
-const getMaterial = async (req,res) => {
+const getMaterial = async (req, res) => {
     try {
-        const materials = await Material.find()
-        res.status(200).json(materials)
+        const rclass = await Class.findOne({subject: req.params.subject});
+        
+        if (!rclass) {
+            return res.status(404).json({
+                success: false,
+                message: "Class not found"
+            });
+        }
+        
+        const materials = await Material.find({class: rclass._id});
+        
+        res.status(200).json({
+            success: true,
+            data: materials
+        });
     } catch (error) {
-        res.status(400).json({
-            success : false,
-            message : error.message
-        })
+        console.error("Error fetching materials:", error);
+        res.status(500).json({
+            success: false,
+            message: "An error occurred while fetching materials"
+        });
     }
-}
+};
 
 const insertMaterial = async (req,res) => {
     const material = new Material({

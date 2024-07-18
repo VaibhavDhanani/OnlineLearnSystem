@@ -62,7 +62,7 @@ routes.forEach(route => {
 // backend routes
 // app.use("/api/v1",healthcheckrouter);
 app.use("/api/v1/user", userRouter);
-app.use("/api/v1/material", materialRouter);
+app.use("/api/v1/materials", materialRouter);
 app.use("/api/v1/class", classRouter);
 app.use("/api/v1/resource", resourceRouter);
 app.use("/api/v1/lectures", lessonRouter);

@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { Routes, Route, Link, useParams } from "react-router-dom";
 import Navbar from "./../Navigation/Navbar";
 import Lectures from "../Classroom/Lectures";
-import { useAuth } from "../../hooks/AuthContext";
-import { URL } from "../../constant";
+import MaterialSection from "../Classroom/MaterialSection";
 
 const ClassLayout = () => {
   const subject = useParams().subject;
@@ -13,7 +12,7 @@ const ClassLayout = () => {
       <Route index element={<ClassSection />} />
       <Route path="lectures" element={<Lectures subject={subject} />} />
       <Route path="assignments" element={<Navbar />} />
-      <Route path="materials" element={<Navbar />} />
+      <Route path="materials" element={<MaterialSection subject={subject} />} />
     </Routes>
   );
 };

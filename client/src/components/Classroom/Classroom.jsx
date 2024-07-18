@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Card from "../common/Card/Card.jsx";
 import { useAuth } from "../../hooks/AuthContext.jsx";
 import { URL } from "../../constant.js";
+import Form from "../common/Form/Form.jsx";
 
 const Classroom = () => {
   const { user } = useAuth();
@@ -13,9 +14,9 @@ const Classroom = () => {
 
   useEffect(() => {
     const fetchClasses = async () => {
+      if (!user) return; // Exit early if user is not available
       const token = localStorage.getItem("token");
       try {
-        setLoading(true);
         const response = await fetch(`${URL}/class/student`, {
           method: "POST",
           headers: {
@@ -41,7 +42,7 @@ const Classroom = () => {
     };
 
     fetchClasses();
-  }, [user]);
+  }, [user, URL]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,6 +61,8 @@ const Classroom = () => {
       if (!response.ok) throw new Error("Failed to create class");
       const data = await response.json();
       console.log(data);
+      // Consider updating the classes state here to include the new class
+      setClasses(prevClasses => [...prevClasses, data]);
     } catch (error) {
       console.log(error);
       alert("Failed to create class: " + error.message);
@@ -67,6 +70,33 @@ const Classroom = () => {
     setOpen(false);
     setSubjectName("");
   };
+
+  const fields = [
+    {
+      id: "teacher",
+      label: "Teacher",
+      type: "text",
+      placeholder: "",
+      value: user?.username || "",
+      onChange: () => {},
+      required: true,
+      disabled: true,
+    },
+    {
+      id: "subject",
+      label: "Subject",
+      type: "text",
+      placeholder: "Enter subject name",
+      value: subjectName,
+      onChange: (value) => setSubjectName(value),
+      required: true,
+      disabled: false,
+    },
+  ];
+
+  if (!user) {
+    return <div>Please log in to view classes</div>;
+  }
 
   if (loading) {
     return <div>Loading...</div>;
@@ -92,75 +122,12 @@ const Classroom = () => {
         Add Class
       </button>
       {open && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-8 rounded-lg shadow-xl w-96 max-w-md">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">
-                Enter Class Details
-              </h2>
-              <button
-                onClick={() => setOpen(false)}
-                className="text-gray-600 hover:text-gray-800 transition duration-150 ease-in-out"
-              >
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-            <form className="space-y-6" onSubmit={handleSubmit}>
-              <div>
-                <label
-                  htmlFor="teacher"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Teacher
-                </label>
-                <input
-                  type="text"
-                  id="teacher"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  value={user.username}
-                  disabled
-                  required
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="subject"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Subject
-                </label>
-                <input
-                  type="text"
-                  id="subject"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter subject name"
-
-                  value={subjectName}
-                  onChange={(e) => setSubjectName(e.target.value)}
-                  required
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-150 ease-in-out"
-              >
-                Submit
-              </button>
-            </form>
-          </div>
-        </div>
+        <Form
+          title="Enter Class Details"
+          fields={fields}
+          onSubmit={handleSubmit}
+          onClose={() => setOpen(false)}
+        />
       )}
     </div>
   );
