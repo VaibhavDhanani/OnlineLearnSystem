@@ -10,6 +10,10 @@ const materialSchema = new Schema({
         required: true,
         ref: 'Class'
     },
+    description: {
+        type: String,
+        required : true
+    },
     file: {
         type: String, 
         required: true

@@ -1,0 +1,29 @@
+import React from "react";
+
+const Lecture = ({ lecture }) => {
+//   console.log(lecture);
+  return (
+    <div className="p-4 flex justify-between items-center">
+      <div>
+        <h2 className="text-xl font-semibold">{lecture.title}</h2>
+        <p className="text-gray-600">Date: {lecture.createdAt}</p>
+      </div>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-6 w-6 text-yellow-600"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M9 5l7 7-7 7"
+        />
+      </svg>
+    </div>
+  );
+};
+
+export default Lecture;

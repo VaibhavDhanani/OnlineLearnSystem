@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Routes, Route, Link, useParams } from "react-router-dom";
 import Navbar from "./../Navigation/Navbar";
-import Lectures from "../Classroom/Lectures";
 import MaterialSection from "../Classroom/MaterialSection";
+import LectureSection from "../Classroom/Lectures";
 
 const ClassLayout = () => {
   const subject = useParams().subject;
@@ -10,7 +10,7 @@ const ClassLayout = () => {
   return (
     <Routes>
       <Route index element={<ClassSection />} />
-      <Route path="lectures" element={<Lectures subject={subject} />} />
+      <Route path="lectures/*" element={<LectureSection subject={subject} />} />
       <Route path="assignments" element={<Navbar />} />
       <Route path="materials" element={<MaterialSection subject={subject} />} />
     </Routes>

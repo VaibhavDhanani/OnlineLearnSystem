@@ -11,36 +11,37 @@ const MaterialSection = ({ subject }) => {
   const [description, setDescription] = useState("");
   const [materials, setMaterials] = useState([]);
 
-  //   useEffect(() => {
-  //     const fetchMaterials = async () => {
-  //       try {
-  //         const response = await fetch(`${URL}/materials/${subject}`, {
-  //           headers: {
-  //             'Authorization': `Bearer ${localStorage.getItem('token')}`
-  //           }
-  //         });
+  const fetchMaterials = async () => {
+    try {
+      const response = await fetch(`${URL}/materials/${subject}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
-  //         if (!response.ok) {
-  //           throw new Error(`HTTP error! status: ${response.status}`);
-  //         }
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-  //         const data = await response.json();
+      const data = await response.json();
 
-  //         if (data.success) {
-  //           setMaterials(data.data);
-  //         } else {
-  //           throw new Error(data.message || "Failed to fetch materials");
-  //         }
-  //       } catch (error) {
-  //         console.error("Error fetching materials:", error);
-  //         alert("Failed to load materials. Please try again later.");
-  //       }
-  //     };
-
-  //     if (subject) {
-  //       fetchMaterials();
-  //     }
-  //   }, [subject]);
+      if (data.success) {
+        setMaterials(data.data);
+      } else {
+        throw new Error(data.message || "Failed to fetch materials");
+      }
+    } catch (error) {
+      console.error("Error fetching materials:", error);
+      alert("Failed to load materials. Please try again later.");
+    }
+  };
+  useEffect(() => {
+    fetchMaterials();
+    if (subject) {
+      fetchMaterials();
+    }
+  }, [subject]);
+  
   const handleFileUpload = async (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
@@ -57,11 +58,32 @@ const MaterialSection = ({ subject }) => {
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission logic
-    console.log({ subject, title, description, file });
-    setOpen(false);
+  const handleSubmit = async (e) => {
+    try {
+      e.preventDefault();
+      const sendMaterial = await fetch(`${URL}/materials`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          subject,
+          title,
+          description,
+          file,
+        }),
+      });
+      if (!sendMaterial.ok) {
+        throw new Error(`HTTP error! status: ${sendMaterial.status}`);
+      }
+      const data = await sendMaterial.json();
+      console.log(data);
+      fetchMaterials();
+      setOpen(false);
+    } catch (error) {
+      alert("Error: " + error);
+    }
   };
 
   const fields = [
@@ -107,6 +129,22 @@ const MaterialSection = ({ subject }) => {
     },
   ];
 
+  // const handleDownload = (url, filename) => {
+  //   fetch(url)
+  //     .then(response => response.blob())
+  //     .then(blob => {
+  //       const url = window.URL.createObjectURL(blob);
+  //       const a = document.createElement('a');
+  //       a.style.display = 'none';
+  //       a.href = url;
+  //       a.download = filename;
+  //       document.body.appendChild(a);
+  //       a.click();
+  //       window.URL.revokeObjectURL(url);
+  //     })
+  //     .catch(() => alert('An error occurred while downloading the file.'));
+  // };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h2 className="text-3xl font-bold text-gray-800 mb-6">Study Materials</h2>
@@ -116,23 +154,28 @@ const MaterialSection = ({ subject }) => {
           No materials available at the moment.
         </p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-6">
           {materials.map((material) => (
             <div
               key={material.id}
-              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+              className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 hover:scale-105"
             >
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
+              <div className="p-6 flex flex-col h-full">
+                <h3 className="text-2xl font-bold text-gray-800 mb-3 hover:text-blue-600 transition-colors duration-300">
                   {material.title}
                 </h3>
-                <p className="text-gray-600 mb-4">{material.description}</p>
+                <p className="text-gray-600 mb-6 flex-grow">
+                  {material.description}
+                  Lorem ipsum dolor sit amet consectetur, adipisicing elit.
+                  Quam, similique?
+                </p>
                 <a
-                  href={material.downloadLink}
-                  className="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors duration-300"
-                  download
+                  href={material.file}
+                  className="inline-block bg-blue-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-600 transform hover:scale-105 transition-all duration-300 text-center"
+                  download="material"
+                  target="blank"
                 >
-                  Download
+                  Download Material
                 </a>
               </div>
             </div>
