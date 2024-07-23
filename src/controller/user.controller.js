@@ -7,15 +7,16 @@ const insertUser = async (req, res) => {
     // console.log(req.body);
 
     const hashedPassword = await bcrypt.hash(req.body.password, 8)
-    .then(function(hash) {
-        return hash;
-    });
+        .then(function (hash) {
+            return hash;
+        });
     const user = new User({
         username: req.body.username,
         email: req.body.email,
         password: hashedPassword.toString(),
         gender: req.body.gender,
         type: req.body.type,
+        classCodes: []
     })
     try {
         const newUser = await user.save()
@@ -58,7 +59,7 @@ const updateUser = async (req, res) => {
 const getUser = async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
-        console.log(user)
+        // console.log(user)
         res.status(200).json(user)
     } catch (error) {
         res.status(400).json({
@@ -70,7 +71,7 @@ const getUser = async (req, res) => {
 
 const validateUser = async (req, res) => {
     try {
-        const JWT_SECRET= process.env.JWT_SECRET_KEY;
+        const JWT_SECRET = process.env.JWT_SECRET_KEY;
         const { username, password } = req.body;
         const users = await User.find();
         const user = users.find(u => u.username === username);
@@ -87,28 +88,34 @@ const validateUser = async (req, res) => {
             message: error.message
         })
     }
-    
+
 }
 
 const joinClass = async (req, res) => {
     const { userId, classCode } = req.body;
 
-  try {
-    const classExists = await Class.findOne({ code: classCode });
-    if (!classExists) {
-      return res.status(404).json({ message: 'Class not found',success: false });
+    try {
+        const classDocument = await Class.findOne({ code: classCode });
+        if (!classDocument) {
+            return res.status(404).json({ message: 'Class not found', success: false });
+        }
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found', success: false });
+        }
+
+        if (user.classCodes.includes(classCode)) {
+            return res.status(400).json({ message: 'User already in this class', success: false });
+        }
+
+        user.classCodes.push(classCode);
+        classDocument.students.push(user._id);
+        await Promise.all([user.save(), classDocument.save()]);
+        res.status(200).json({ message: 'Class joined successfully', success: true });
+    } catch (error) {
+        console.error('Error in joinClass:', error);
+        res.status(500).json({ message: 'Internal server error', error: error.message });
     }
-
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { $addToSet: { classCodes: classCode } },
-      { new: true }
-    );
-
-    res.status(200).json({ message: 'Class joined successfully', success: true });
-  } catch (error) {
-    res.status(500).json({ message: 'Internal server error', error });
-  }
 }
 
 

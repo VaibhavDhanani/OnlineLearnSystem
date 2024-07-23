@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { URL } from "../../constant";
 import Form from "../common/Form/Form";
-import Lecture from "./lecture";
 import { Link, Route, Routes } from "react-router-dom";
 import LectureDetail from "./LectureDetail.jsx";
+import Lesson from "./lecture";
 
 
 const Lectures = ({ subject }) => {
@@ -111,11 +111,11 @@ const Lectures = ({ subject }) => {
               to={`/home/Mathematics/lectures/${lecture._id}`}
               className="block bg-yellow-100 border-l-8 border-yellow-400 hover:bg-yellow-200 transition-colors duration-200 ease-in-out"
             >
-              <Lecture lecture={lecture} />
+              <Lesson lecture={lecture} />
             </Link>
           ))
         ) : (
-          <p>This Class has no lectures yet</p>
+          <p>This Class has no Lessons yet</p>
         )}
       </div>
       <div className="fixed bottom-10 right-10">
@@ -123,7 +123,7 @@ const Lectures = ({ subject }) => {
           className="x border-green-500 border-2 bg-white text-green-500 hover:bg-green-500 hover:text-white text-base p-2 min-w-[40px] rounded-xl font-bold cursor-pointer transition-all duration-300 ease-in-out flex justify-center items-center leading-none"
           onClick={() => setOpen(true)}
         >
-          Add Lecture
+          Add Assignment
         </button>
         {open && (
           <Form

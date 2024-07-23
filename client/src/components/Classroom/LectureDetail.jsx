@@ -1,18 +1,82 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import Form from "../common/Form/Form";
 import { ref, uploadBytes, getDownloadURL, getStorage } from "firebase/storage";
+import { URL } from "../../constant";
 
 const LectureDetail = () => {
+  const lessonIdString = useParams().lectureId;
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState(null);
+  const [lectures, setLectures] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleSubmit = (e) => {
+  const fetchLectures = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${URL}/resource/${lessonIdString}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch lectures");
+      const data = await response.json();
+      setLectures(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchLectures();
+  }, [lessonIdString]);
+
+  console.log(lectures);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Implement your submit logic here
-    console.log({ title, description, file });
-    setOpen(false);
+    const lecture = {
+      title,
+      lessonId: lessonIdString,
+      description,
+      videolink: file,
+    };
+
+    try {
+      const response = await fetch(`${URL}/resource`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(lecture),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log(data);
+      setOpen(false);
+      // Reset form fields
+      setTitle("");
+      setDescription("");
+      setFile(null);
+      // Fetch lectures again to update the list
+      fetchLectures();
+    } catch (error) {
+      console.error("Error submitting lecture:", error);
+      setError("Failed to submit lecture. Please try again.");
+    }
   };
 
   const handleFileUpload = async (e) => {
@@ -20,13 +84,17 @@ const LectureDetail = () => {
     if (selectedFile) {
       try {
         const storage = getStorage();
-        const storageRef = ref(storage, 'videos/LearnSpace/' + selectedFile.name);
+        const storageRef = ref(
+          storage,
+          "videos/LearnSpace/" + selectedFile.name
+        );
         const snapshot = await uploadBytes(storageRef, selectedFile);
         const downloadUrl = await getDownloadURL(snapshot.ref);
-        console.log('File uploaded successfully. Download URL:', downloadUrl);
+        console.log("File uploaded successfully. Download URL:", downloadUrl);
         setFile(downloadUrl);
       } catch (error) {
-        console.error('Error uploading file:', error);
+        console.error("Error uploading file:", error);
+        setError("Failed to upload file. Please try again.");
       }
     }
   };
@@ -64,50 +132,53 @@ const LectureDetail = () => {
     },
   ];
 
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Video segment */}
-        <div className="lg:w-1/3">
-          <div className="aspect-w-16 aspect-h-9 bg-gray-200 rounded-lg overflow-hidden">
-            <img
-              src="https://images.pexels.com/photos/301920/pexels-photo-301920.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-              alt="Lecture thumbnail"
-              className="object-cover w-full h-full"
-            />
-          </div>
-        </div>
+      <div className="space-y-8">
+        {lectures.map((lecture, index) => (
+          <div
+            key={lecture._id}
+            className="flex flex-col lg:flex-row gap-8 bg-white rounded-lg shadow-md overflow-hidden"
+          >
+            <div className="md:w-1/3">
+              <div className="aspect-w-16 aspect-h-9">
+                <video className="w-full h-full object-cover" controls>
+                  <source src={lecture.videolink} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            </div>
 
-        {/* Lecture details */}
-        <div className="lg:w-1/2 space-y-4">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Lecture 1</h2>
-            <h3 className="text-xl font-semibold text-gray-700 mb-4">
-              Introduction to React
-            </h3>
-
-            <p className="text-gray-600 mb-4">
-              In this lecture, we cover the basics of React, including
-              components, state, and props. We'll build a simple application to
-              demonstrate these concepts in action.
-            </p>
-
-            <div className="flex items-center text-sm text-gray-500">
-              <svg
-                className="w-4 h-4 mr-2"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              Posted on July 19, 2024
+            <div className="p-6 flex flex-col justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                  Lecture {index + 1}
+                </h2>
+                <h3 className="text-xl font-semibold text-gray-700 mb-4">
+                  {lecture.title}
+                </h3>
+                <p className="text-gray-600 mb-4">{lecture.description}</p>
+              </div>
+              <div className="flex items-center text-sm text-gray-500">
+                <svg
+                  className="w-4 h-4 mr-2"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                Posted on {new Date(lecture.createdAt).toLocaleDateString()}
+              </div>
             </div>
           </div>
-        </div>
+        ))}
       </div>
       <div className="fixed bottom-10 right-10">
         <button

@@ -4,7 +4,8 @@ import authenticateToken from "../middlewares/auth.middleware.js";
 
 const router = Router();
 router.use(authenticateToken)
-router.route("/").get(getResources).post(insertResource)
+router.route("/").post(insertResource)
+router.route("/:id").get(getResources)
 router.route("/update/:id").put(updateResource)
 router.route("/delete/:id").delete(deleteResource);
 

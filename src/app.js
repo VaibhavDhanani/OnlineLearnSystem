@@ -66,7 +66,7 @@ app.use("/api/v1/materials", materialRouter);
 app.use("/api/v1/class", classRouter);
 app.use("/api/v1/resource", resourceRouter);
 app.use("/api/v1/lectures", lessonRouter);
-app.use("/api/v1/assignment", assignmentRouter);
+app.use("/api/v1/assignments", assignmentRouter);
 
 // error handling
 app.use((err, req, res, next) => {

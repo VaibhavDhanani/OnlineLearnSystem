@@ -3,11 +3,11 @@ import { deleteAssignment, getAssignments, insertAssignment, updateAssignment } 
 import authenticateToken from '../middlewares/auth.middleware.js';
 
 const router = Router();
-router.use(authenticateToken)
+// router.use(authenticateToken)
 
-router.route('/:class').get(getAssignments);
-router.route('/:class/insert').post(insertAssignment);
-router.route('/:class/update').put(updateAssignment);
-router.route('/:class/delete').delete(deleteAssignment);
+router.route('/:subject').get(getAssignments);
+router.route('/insert').post(insertAssignment);
+router.route('/:subject/update').put(updateAssignment);
+router.route('/:subject/delete').delete(deleteAssignment);
 
 export default router;

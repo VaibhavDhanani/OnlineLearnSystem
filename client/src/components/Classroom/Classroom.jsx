@@ -14,7 +14,7 @@ const Classroom = () => {
 
   useEffect(() => {
     const fetchClasses = async () => {
-      if (!user) return; // Exit early if user is not available
+      if (!user) return; 
       const token = localStorage.getItem("token");
       try {
         const response = await fetch(`${URL}/class/student`, {
@@ -95,7 +95,7 @@ const Classroom = () => {
   ];
 
   if (!user) {
-    return <div>Please log in to view classes</div>;
+    return <div>Please join the classes to view or referesh</div>;
   }
 
   if (loading) {

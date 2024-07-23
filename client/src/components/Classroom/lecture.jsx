@@ -1,6 +1,6 @@
 import React from "react";
 
-const Lecture = ({ lecture }) => {
+const Lesson = ({ lecture }) => {
 //   console.log(lecture);
   return (
     <div className="p-4 flex justify-between items-center">
@@ -26,4 +26,4 @@ const Lecture = ({ lecture }) => {
   );
 };
 
-export default Lecture;
+export default Lesson;

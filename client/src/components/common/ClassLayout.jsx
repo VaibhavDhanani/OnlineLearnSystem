@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Routes, Route, Link, useParams } from "react-router-dom";
-import Navbar from "./../Navigation/Navbar";
 import MaterialSection from "../Classroom/MaterialSection";
 import LectureSection from "../Classroom/Lectures";
+import AssignmentSection from "../Classroom/AssignmentSection";
 
 const ClassLayout = () => {
   const subject = useParams().subject;
@@ -11,7 +11,7 @@ const ClassLayout = () => {
     <Routes>
       <Route index element={<ClassSection />} />
       <Route path="lectures/*" element={<LectureSection subject={subject} />} />
-      <Route path="assignments" element={<Navbar />} />
+      <Route path="assignments" element={<AssignmentSection subject={subject} />} />
       <Route path="materials" element={<MaterialSection subject={subject} />} />
     </Routes>
   );
@@ -19,7 +19,7 @@ const ClassLayout = () => {
 
 const ClassSection = () => {
   const subject = useParams().subject;
-  
+
   return (
     <div className="container relative mx-auto px-4">
       {/* Top Row: Lessons, Assignment, Material */}
