@@ -4,7 +4,6 @@ import bcrypt from 'bcryptjs';
 import { Class } from "../models/class.model.js";
 
 const insertUser = async (req, res) => {
-    // console.log(req.body);
 
     const hashedPassword = await bcrypt.hash(req.body.password, 8)
         .then(function (hash) {
@@ -16,15 +15,17 @@ const insertUser = async (req, res) => {
         password: hashedPassword.toString(),
         gender: req.body.gender,
         type: req.body.type,
-        classCodes: []
+        classCodes: [],
     })
+    // console.log(user);
     try {
         const newUser = await user.save()
         res.status(201).json(newUser)
     } catch (error) {
+        console.error(error)
         res.status(400).json({
             success: false,
-            message: error.message
+            message: error
         })
     }
 }
@@ -94,11 +95,16 @@ const validateUser = async (req, res) => {
 const joinClass = async (req, res) => {
     const { userId, classCode } = req.body;
 
+    if (!userId || !classCode) {
+        return res.status(400).json({ message: 'Missing userId or classCode', success: false });
+    }
+
     try {
         const classDocument = await Class.findOne({ code: classCode });
         if (!classDocument) {
             return res.status(404).json({ message: 'Class not found', success: false });
         }
+
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: 'User not found', success: false });
@@ -107,16 +113,23 @@ const joinClass = async (req, res) => {
         if (user.classCodes.includes(classCode)) {
             return res.status(400).json({ message: 'User already in this class', success: false });
         }
+        console.log("before join")
 
         user.classCodes.push(classCode);
+        await user.save();
+        console.log("after join")
+
         classDocument.students.push(user._id);
-        await Promise.all([user.save(), classDocument.save()]);
+        await classDocument.save();
+        console.log("after class")
+        
+
         res.status(200).json({ message: 'Class joined successfully', success: true });
     } catch (error) {
         console.error('Error in joinClass:', error);
-        res.status(500).json({ message: 'Internal server error', error: error.message });
+        res.status(500).json({ message: 'Internal server error', error: error.message, stack: error.stack });
     }
-}
+};
 
 
 

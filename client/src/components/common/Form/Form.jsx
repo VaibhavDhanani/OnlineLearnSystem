@@ -42,9 +42,9 @@ const Form = ({ title, fields, onSubmit, onClose }) => {
                 value={field.type !== "file" ? field.value : undefined}
                 onChange={(e) => {
                   if (field.type === "file") {
-                    field.onChange(e); // Pass the entire event for file inputs
+                    field.onChange(e); 
                   } else {
-                    field.onChange(e.target.value); // For other inputs, pass just the value
+                    field.onChange(e.target.value); 
                   }
                 }}
                 required={field.required}

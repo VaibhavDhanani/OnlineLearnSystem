@@ -3,6 +3,7 @@ import { storage } from "../../firebase/firebase.config";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { URL } from "../../constant";
 import Form from "../common/Form/Form";
+import { useAuth } from "../../hooks/AuthContext.jsx";
 
 const MaterialSection = ({ subject }) => {
   const [open, setOpen] = useState(false);
@@ -10,6 +11,7 @@ const MaterialSection = ({ subject }) => {
   const [file, setFile] = useState("");
   const [description, setDescription] = useState("");
   const [materials, setMaterials] = useState([]);
+  const {user} = useAuth();
 
   const fetchMaterials = async () => {
     try {
@@ -41,7 +43,7 @@ const MaterialSection = ({ subject }) => {
       fetchMaterials();
     }
   }, [subject]);
-  
+
   const handleFileUpload = async (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
@@ -129,22 +131,6 @@ const MaterialSection = ({ subject }) => {
     },
   ];
 
-  // const handleDownload = (url, filename) => {
-  //   fetch(url)
-  //     .then(response => response.blob())
-  //     .then(blob => {
-  //       const url = window.URL.createObjectURL(blob);
-  //       const a = document.createElement('a');
-  //       a.style.display = 'none';
-  //       a.href = url;
-  //       a.download = filename;
-  //       document.body.appendChild(a);
-  //       a.click();
-  //       window.URL.revokeObjectURL(url);
-  //     })
-  //     .catch(() => alert('An error occurred while downloading the file.'));
-  // };
-
   return (
     <div className="container mx-auto px-4 py-8">
       <h2 className="text-3xl font-bold text-gray-800 mb-6">Study Materials</h2>
@@ -166,8 +152,6 @@ const MaterialSection = ({ subject }) => {
                 </h3>
                 <p className="text-gray-600 mb-6 flex-grow">
                   {material.description}
-                  Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-                  Quam, similique?
                 </p>
                 <a
                   href={material.file}
@@ -182,13 +166,14 @@ const MaterialSection = ({ subject }) => {
           ))}
         </div>
       )}
-
-      <button
-        className="fixed bottom-16 right-16 border-green-500 border-2 bg-white text-green-500 hover:bg-green-500 hover:text-white text-base p-2 min-w-[40px] rounded-xl font-bold cursor-pointer transition-all duration-300 ease-in-out flex justify-center items-center leading-none"
-        onClick={() => setOpen(true)}
-      >
-        Upload Material
-      </button>
+      {user.type === "teacher" && (
+        <button
+          className="fixed bottom-16 right-16 border-green-500 border-2 bg-white text-green-500 hover:bg-green-500 hover:text-white text-base p-2 min-w-[40px] rounded-xl font-bold cursor-pointer transition-all duration-300 ease-in-out flex justify-center items-center leading-none"
+          onClick={() => setOpen(true)}
+        >
+          Upload Material
+        </button>
+      )}
       {open && (
         <Form
           title="Enter Material Details"

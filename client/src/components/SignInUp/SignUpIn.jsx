@@ -25,9 +25,9 @@ const SignUpIn = () => {
       gender: event.target.gender.value,
       type: event.target.role.value,
     };
-    console.log(user, URL);
+    // console.log(user, URL);
     try {
-      const response = await fetch(`${URL}/user`, {
+      const response = await fetch(`${URL}/user/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -38,11 +38,9 @@ const SignUpIn = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      // console.log(data);
       alert("User added Successfully");
     } catch (error) {
       console.error("Error:", error);
-      //   alert(user)
       alert("Failed to add user. Please try again." + error.message);
     }
   };

@@ -14,7 +14,7 @@ const Classroom = () => {
 
   useEffect(() => {
     const fetchClasses = async () => {
-      if (!user) return; 
+      if (!user) return;
       const token = localStorage.getItem("token");
       try {
         const response = await fetch(`${URL}/class/student`, {
@@ -29,8 +29,9 @@ const Classroom = () => {
         if (!response.ok) {
           throw new Error("Failed to fetch classes");
         }
-
+        
         const data = await response.json();
+        console.log(data)
         setClasses(data);
         setError(null);
       } catch (error) {
@@ -61,8 +62,7 @@ const Classroom = () => {
       if (!response.ok) throw new Error("Failed to create class");
       const data = await response.json();
       console.log(data);
-      // Consider updating the classes state here to include the new class
-      setClasses(prevClasses => [...prevClasses, data]);
+      setClasses((prevClasses) => [...prevClasses, data]);
     } catch (error) {
       console.log(error);
       alert("Failed to create class: " + error.message);
@@ -115,12 +115,15 @@ const Classroom = () => {
       {classes.map((classItem) => (
         <Card key={classItem._id} classData={classItem} />
       ))}
-      <button
-        className="fixed bottom-16 right-16 border-green-500 border-2 bg-white text-green-500 hover:bg-green-500 hover:text-white text-base p-2 min-w-[40px] rounded-xl font-bold cursor-pointer transition-all duration-300 ease-in-out flex justify-center items-center leading-none"
-        onClick={() => setOpen(true)}
-      >
-        Add Class
-      </button>
+
+      {user.type === "teacher" && (
+        <button
+          className="fixed bottom-16 right-16 border-green-500 border-2 bg-white text-green-500 hover:bg-green-500 hover:text-white text-base p-2 min-w-[40px] rounded-xl font-bold cursor-pointer transition-all duration-300 ease-in-out flex justify-center items-center leading-none"
+          onClick={() => setOpen(true)}
+        >
+          Add Class
+        </button>
+      )}
       {open && (
         <Form
           title="Enter Class Details"

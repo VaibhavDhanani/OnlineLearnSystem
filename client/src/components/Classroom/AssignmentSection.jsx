@@ -3,8 +3,10 @@ import Assignment from "./Assignment";
 import Form from "../common/Form/Form";
 import { URL } from "../../constant";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { useAuth } from "../../hooks/AuthContext";
 
 const AssignmentSection = ({ subject }) => {
+  const {user} = useAuth();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -139,23 +141,24 @@ const AssignmentSection = ({ subject }) => {
           />
         ))}
       </div>
-
-      <div className="fixed bottom-10 right-10">
-        <button
-          className="x border-green-500 border-2 bg-white text-green-500 hover:bg-green-500 hover:text-white text-base p-2 min-w-[40px] rounded-xl font-bold cursor-pointer transition-all duration-300 ease-in-out flex justify-center items-center leading-none"
-          onClick={() => setOpen(true)}
-        >
-          Create New Assignment
-        </button>
-        {open && (
-          <Form
-            title="Create New Assignment"
-            fields={fields}
-            onSubmit={handleSubmit}
-            onClose={() => setOpen(false)}
-          />
-        )}
-      </div>
+      {user.type === "teacher" && (
+        <div className="fixed bottom-10 right-10">
+          <button
+            className="x border-green-500 border-2 bg-white text-green-500 hover:bg-green-500 hover:text-white text-base p-2 min-w-[40px] rounded-xl font-bold cursor-pointer transition-all duration-300 ease-in-out flex justify-center items-center leading-none"
+            onClick={() => setOpen(true)}
+          >
+            Create New Assignment
+          </button>
+          {open && (
+            <Form
+              title="Create New Assignment"
+              fields={fields}
+              onSubmit={handleSubmit}
+              onClose={() => setOpen(false)}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 };

@@ -14,6 +14,10 @@ const BasicModal = () => {
     event.preventDefault();
     const token = localStorage.getItem("token");
 
+    if (!token) {
+      alert("You are not logged in. Please log in and try again.");
+      return;
+    }
     try {
       const response = await fetch(`${URL}/user/joinclass`, {
         method: "POST",
@@ -28,15 +32,18 @@ const BasicModal = () => {
       });
 
       const data = await response.json();
-      const success = data.success;
 
-      if (success) {
+      if (response.ok && data.success) {
         handleClose();
+        // Optionally update UI or state to reflect the joined class
       } else {
-        alert("Failed to join the class: " + data.message);
+        alert(`Failed to join the class: ${data.message || "Unknown error"}`);
       }
     } catch (error) {
       console.error("Error joining class:", error);
+      alert(
+        "An error occurred while trying to join the class. Please try again."
+      );
     }
   };
 

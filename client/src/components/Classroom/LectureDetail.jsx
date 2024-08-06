@@ -138,6 +138,7 @@ const LectureDetail = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="space-y-8">
+        <h1>Your lectures</h1>
         {lectures.map((lecture, index) => (
           <div
             key={lecture._id}

@@ -11,56 +11,39 @@ import lessonRouter from './routes/lesson.routes.js';
 import assignmentRouter from './routes/assignment.routes.js';
 import authenticateToken from './middlewares/auth.middleware.js';
 
-
 dotenv.config();
 
 const app = express();
 
-app.use(express.json());
-
+// Increase max listeners for EventEmitter
 const emitter = new EventEmitter();
 emitter.setMaxListeners(20);
 
-app.use(
-  cors({
-    origin: process.env.CORS_ORIGIN,
-    credentials: true,
-  })
-)
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:5173'); // Replace with your frontend URL
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  
-  // Handle preflight requests
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
-  }
-  
-  next();
-});
+// Middleware
+app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+app.use(express.static("public"));
 
-app.use(express.urlencoded({ extended: true }))
-app.use(express.static("public")) // image storage folder
+// CORS configuration
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
+  credentials: true
+}));
 
-// middleware
-
-// client routes
+// Client routes
 const handleRoute = (req, res) => {
   const routePath = req.originalUrl;
   res.json({ message: `Welcome to ${routePath}`});
 };
-const routes = ['/home', '/home/:subject'];
 
+const routes = ['/home', '/home/:subject', '/'];
 routes.forEach(route => {
   app.get(route, handleRoute);
 });
 
-
-
-// backend routes
-// app.use("/api/v1",healthcheckrouter);
+// Backend routes
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/materials", materialRouter);
 app.use("/api/v1/class", classRouter);
@@ -68,7 +51,7 @@ app.use("/api/v1/resource", resourceRouter);
 app.use("/api/v1/lectures", lessonRouter);
 app.use("/api/v1/assignments", assignmentRouter);
 
-// error handling
+// Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ message: 'An unexpected error occurred' });
