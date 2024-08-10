@@ -31,7 +31,7 @@ const Classroom = () => {
         }
         
         const data = await response.json();
-        console.log(data)
+        // console.log(data)
         setClasses(data);
         setError(null);
       } catch (error) {

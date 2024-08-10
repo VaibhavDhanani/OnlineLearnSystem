@@ -53,9 +53,11 @@ const MaterialSection = ({ subject }) => {
         const downloadUrl = await getDownloadURL(snapshot.ref);
 
         setFile(downloadUrl);
+        return true;
       } catch (error) {
         console.error("Error uploading file:", error);
-        alert("Error uploading file: " + error.message);
+        // alert("Error uploading file: " + error.message);
+        return false;
       }
     }
   };

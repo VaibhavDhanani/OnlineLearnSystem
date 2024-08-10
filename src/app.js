@@ -9,7 +9,7 @@ import classRouter from './routes/class.routes.js';
 import resourceRouter from './routes/resource.routes.js';
 import lessonRouter from './routes/lesson.routes.js';
 import assignmentRouter from './routes/assignment.routes.js';
-import authenticateToken from './middlewares/auth.middleware.js';
+import announcementRouter from './routes/announcement.routes.js';
 
 dotenv.config();
 
@@ -50,6 +50,7 @@ app.use("/api/v1/class", classRouter);
 app.use("/api/v1/resource", resourceRouter);
 app.use("/api/v1/lectures", lessonRouter);
 app.use("/api/v1/assignments", assignmentRouter);
+app.use("/api/v1/announcement", announcementRouter);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

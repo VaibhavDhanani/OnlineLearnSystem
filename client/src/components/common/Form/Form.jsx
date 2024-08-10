@@ -1,6 +1,26 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 const Form = ({ title, fields, onSubmit, onClose }) => {
+  const [isUploading, setIsUploading] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  useEffect(() => {
+    const checkFormValidity = () => {
+      const allFieldsValid = fields.every(field => 
+        !field.required || (field.value !== undefined && field.value !== '')
+      );
+      setIsFormValid(allFieldsValid && !isUploading);
+    };
+
+    checkFormValidity();
+  }, [fields, isUploading]);
+
+  const handleFileUpload = async (fileUpload, e) => {
+    setIsUploading(true);
+    await fileUpload(e);
+    setIsUploading(false);
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white p-8 rounded-lg shadow-xl w-96 max-w-md">
@@ -42,9 +62,9 @@ const Form = ({ title, fields, onSubmit, onClose }) => {
                 value={field.type !== "file" ? field.value : undefined}
                 onChange={(e) => {
                   if (field.type === "file") {
-                    field.onChange(e); 
+                    handleFileUpload(field.onChange, e);
                   } else {
-                    field.onChange(e.target.value); 
+                    field.onChange(e.target.value);
                   }
                 }}
                 required={field.required}
@@ -55,9 +75,14 @@ const Form = ({ title, fields, onSubmit, onClose }) => {
           ))}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-150 ease-in-out"
+            disabled={isUploading}
+            className={`w-full py-2 px-4 rounded-md transition duration-150 ease-in-out ${
+              isFormValid
+                ? "bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            }`}
           >
-            Submit
+            {isUploading ? "Uploading..." : "Submit"}
           </button>
         </form>
       </div>

@@ -39,7 +39,7 @@ const LectureDetail = () => {
     fetchLectures();
   }, [lessonIdString]);
 
-  console.log(lectures);
+  // console.log(lectures);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -124,6 +124,7 @@ const LectureDetail = () => {
       id: "file",
       label: "VideoLink",
       type: "file",
+      value: file,
       placeholder: "Upload the Video",
       onChange: handleFileUpload,
       disabled: false,
