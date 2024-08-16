@@ -11,7 +11,7 @@ const MaterialSection = ({ subject }) => {
   const [file, setFile] = useState("");
   const [description, setDescription] = useState("");
   const [materials, setMaterials] = useState([]);
-  const {user} = useAuth();
+  const { user } = useAuth();
 
   const fetchMaterials = async () => {
     try {
@@ -82,8 +82,11 @@ const MaterialSection = ({ subject }) => {
         throw new Error(`HTTP error! status: ${sendMaterial.status}`);
       }
       const data = await sendMaterial.json();
-      console.log(data);
+      // console.log(data);
       fetchMaterials();
+      setTitle("");
+      setDescription("");
+      setFile("");
       setOpen(false);
     } catch (error) {
       alert("Error: " + error);
@@ -134,32 +137,35 @@ const MaterialSection = ({ subject }) => {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h2 className="text-3xl font-bold text-gray-800 mb-6">Study Materials</h2>
+    <div className="container mx-auto px-4 py-12 bg-gray-50">
+      <h2 className="text-4xl font-bold text-gray-800 mb-8 text-center">
+        Study Materials
+      </h2>
 
       {materials.length === 0 ? (
-        <p className="text-gray-600 text-center">
+        <p className="text-gray-600 text-center text-lg italic">
           No materials available at the moment.
         </p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           {materials.map((material) => (
             <div
               key={material.id}
-              className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 hover:scale-105"
+              className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
             >
-              <div className="p-6 flex flex-col h-full">
-                <h3 className="text-2xl font-bold text-gray-800 mb-3 hover:text-blue-600 transition-colors duration-300">
+              <div className="p-8 flex flex-col h-full">
+                <h3 className="text-2xl font-bold text-gray-800 mb-4 hover:text-blue-600 transition-colors duration-300">
                   {material.title}
                 </h3>
-                <p className="text-gray-600 mb-6 flex-grow">
+                <p className="text-gray-600 mb-6 flex-grow text-lg">
                   {material.description}
                 </p>
                 <a
                   href={material.file}
-                  className="inline-block bg-blue-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-600 transform hover:scale-105 transition-all duration-300 text-center"
+                  className="inline-block bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 transform hover:scale-105 transition-all duration-300 text-center shadow-md hover:shadow-lg"
                   download="material"
-                  target="blank"
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   Download Material
                 </a>
@@ -170,9 +176,23 @@ const MaterialSection = ({ subject }) => {
       )}
       {user.type === "teacher" && (
         <button
-          className="fixed bottom-16 right-16 border-green-500 border-2 bg-white text-green-500 hover:bg-green-500 hover:text-white text-base p-2 min-w-[40px] rounded-xl font-bold cursor-pointer transition-all duration-300 ease-in-out flex justify-center items-center leading-none"
+          className="fixed bottom-8 right-8 bg-green-500 text-white hover:bg-green-600 text-lg py-3 px-6 rounded-full font-bold cursor-pointer transition-all duration-300 ease-in-out flex justify-center items-center shadow-lg hover:shadow-xl"
           onClick={() => setOpen(true)}
         >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 mr-2"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            />
+          </svg>
           Upload Material
         </button>
       )}

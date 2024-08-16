@@ -8,7 +8,7 @@ const insertAssignment = async (req, res) => {
             return res.status(404).json({ success: false, message: "Class not found" });
         }
 
-        // console.log(req.body.files)
+        console.log(req.body)
         const assignment = new Assignment({
             title: req.body.title,
             description: req.body.description,

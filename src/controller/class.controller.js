@@ -1,25 +1,25 @@
 import { Class } from "../models/class.model.js";
+import { User } from "../models/user.model.js";
 
 
 const usedCodes = new Set();
-
 function generateRandomCode() {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let result = '';
-  for (let i = 0; i < 10; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return result;
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < 10; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
 }
 
 function getUniqueCode() {
-  let code;
-  do {
-    code = generateRandomCode();
-  } while (usedCodes.has(code));
-  
-  usedCodes.add(code);
-  return code;
+    let code;
+    do {
+        code = generateRandomCode();
+    } while (usedCodes.has(code));
+
+    usedCodes.add(code);
+    return code;
 }
 
 const getClasses = async (req, res) => {
@@ -43,15 +43,31 @@ const getClasses = async (req, res) => {
 
 
 const insertClass = async (req, res) => {
+
     try {
+        const { user, subject } = req.body;
+        console.log('Extracted user and subject:', { user, subject });
+        if (!user || !user._id || !subject) {
+            throw new Error('Invalid user or subject data');
+        }
+        const code = getUniqueCode();
+        console.log('Creating new class with:', { teacher: user._id, subject, code });
         const newClass = new Class({
-            teacher: req.body.userId,
-            subject: req.body.subject,
-            code: getUniqueCode()
+            teacher: user._id,
+            subject: subject,
+            code: code,
+            students: [user._id]
         });
+        console.log('New class created, attempting to save');
         const savedClass = await newClass.save();
+        console.log('Class saved successfully:', savedClass);
+        await User.findByIdAndUpdate(user._id, {
+            $push: { classCodes: code }
+        });
+
         res.status(201).json(savedClass);
     } catch (error) {
+        console.error('Error in insertClass:', error);
         res.status(400).json({
             success: false,
             message: error.message
@@ -77,12 +93,29 @@ const updateClass = async (req, res) => {
 
 const deleteClass = async (req, res) => {
     try {
-        const deletedClass = await Class.findByIdAndDelete(req.params.id);
-        res.status(200).json(deletedClass);
+        const classId = req.params.id;
+        const deletedClass = await Class.findById(classId);
+        if (!deletedClass) {
+            return res.status(404).json({
+                success: false,
+                message: "Class not found",
+            });
+        }
+        const updatedUsers = await User.updateMany(
+            { classCodes: deletedClass.code },
+            { $pull: { classCodes: deletedClass.code } }
+        );
+        await Class.findByIdAndDelete(classId);
+
+        res.status(200).json({
+            success: true,
+            message: "Class deleted successfully and removed from all users",
+        });
     } catch (error) {
-        res.status(400).json({
+        console.error("Error deleting class:", error);
+        res.status(500).json({
             success: false,
-            message: error.message,
+            message: "An error occurred while deleting the class",
         });
     }
 };

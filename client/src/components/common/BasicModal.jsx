@@ -35,9 +35,8 @@ const BasicModal = () => {
 
       if (response.ok && data.success) {
         handleClose();
-        // Optionally update UI or state to reflect the joined class
       } else {
-        alert(`Failed to join the class: ${data.message || "Unknown error"}`);
+        alert(`Failed to join the class: ${data.message}`);
       }
     } catch (error) {
       console.error("Error joining class:", error);

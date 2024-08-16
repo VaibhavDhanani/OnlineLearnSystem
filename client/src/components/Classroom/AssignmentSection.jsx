@@ -2,11 +2,10 @@ import React, { useState, useEffect } from "react";
 import Assignment from "./Assignment";
 import Form from "../common/Form/Form";
 import { URL } from "../../constant";
-import axios from "axios";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { useAuth } from "../../hooks/AuthContext.jsx";
-import ConvertAPI from "convertapi";
 import AssignmentView from "./teacher/AssignmentView.jsx";
+import { storage } from "../../firebase/firebase.config.js";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const AssignmentSection = ({ subject }) => {
   const [open, setOpen] = useState(false);
@@ -34,53 +33,18 @@ const AssignmentSection = ({ subject }) => {
     fetchAssignments();
   }, [subject]);
 
-  const convertToDocx = async (file) => {
-    try {
-      var convertapi = require("convertapi")("mE5r9OWhDLNOMGe0");
-      convertapi
-        .convert(
-          "docx",
-          {
-            File: { file },
-          },
-          "pdf"
-        )
-        .then(function (result) {
-          console.log("object");
-          return result.saveFiles("/documents");
-        });
-    } catch (error) {
-      console.error("Error converting file:", error);
-      throw error;
-    }
-  };
-
   const handleFileUpload = async (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       try {
-        let fileToUpload;
-
-        if (
-          selectedFile.type ===
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        ) {
-          fileToUpload = selectedFile;
-        } else {
-          fileToUpload = await convertToDocx(selectedFile);
-        }
-
-        const storage = getStorage();
-        const storageRef = ref(storage, "documents/" + fileToUpload.name);
-        const snapshot = await uploadBytes(storageRef, fileToUpload);
+        const storageRef = ref(storage, "/documents/" + selectedFile.name);
+        const snapshot = await uploadBytes(storageRef, selectedFile);
         const downloadUrl = await getDownloadURL(snapshot.ref);
-
-        console.log("File uploaded successfully. Download URL:", downloadUrl);
-
-        setFiles((prevFiles) => [...prevFiles, downloadUrl]);
+        setFiles(prevFiles => [...prevFiles, downloadUrl]);
+        return true;
       } catch (error) {
         console.error("Error uploading file:", error);
-        // Add user feedback here, e.g., alert(error.message);
+        return false;
       }
     }
   };
@@ -155,46 +119,66 @@ const AssignmentSection = ({ subject }) => {
   // console.log(assignments);
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-center mb-6">
-        Assignments for {subject}
-      </h1>
+    <div className="bg-gray-100 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-4xl font-extrabold text-center mb-10 text-indigo-900">
+          Assignments for {subject}
+        </h1>
 
-      {user.type === "teacher" ? (
-        <div>
-          <AssignmentView subject={subject}/>
+        {user.type === "teacher" ? (
+          <div>
+            <AssignmentView subject={subject} />
 
-          <div className="fixed bottom-10 right-10">
-            <button
-              className="x border-green-500 border-2 bg-white text-green-500 hover:bg-green-500 hover:text-white text-base p-2 min-w-[40px] rounded-xl font-bold cursor-pointer transition-all duration-300 ease-in-out flex justify-center items-center leading-none"
-              onClick={() => setOpen(true)}
-            >
-              Create New Assignment
-            </button>
-            {open && (
-              <Form
-                title="Create New Assignment"
-                fields={fields}
-                onSubmit={handleSubmit}
-                onClose={() => setOpen(false)}
-              />
-            )}
+            <div className="fixed bottom-10 right-10">
+              <button
+                className="bg-gradient-to-r from-green-400 to-green-600 text-white text-lg font-semibold py-3 px-6 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out flex items-center"
+                onClick={() => setOpen(true)}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  />
+                </svg>
+                New Assignment
+              </button>
+              {open && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                  <div className="bg-white rounded-xl shadow-2xl w-full max-w-md">
+                    <Form
+                      title="Create New Assignment"
+                      fields={fields}
+                      onSubmit={handleSubmit}
+                      onClose={() => setOpen(false)}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      ) : (
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 gap-6 p-4">
-            {assignments.map((assignment) => (
-              <Assignment
-                key={assignment._id}
-                assignment={assignment}
-                onFileUpload={handleFileUpload}
-                className="bg-white shadow-md rounded-lg p-4 hover:shadow-lg transition-shadow duration-300 w-full"
-              />
-            ))}
+        ) : (
+          <div className="max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 gap-8">
+              {assignments.map((assignment) => (
+                <Assignment
+                  key={assignment._id}
+                  assignment={assignment}
+                  onFileUpload={handleFileUpload}
+                  className="bg-white shadow-lg rounded-xl p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

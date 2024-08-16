@@ -3,7 +3,7 @@ import mongoose, { Schema } from "mongoose";
 const classSchema = new Schema(
   {
     code: {
-      type: "string",
+      type: String,
       required: true,
       unique: true,
       trim: true,

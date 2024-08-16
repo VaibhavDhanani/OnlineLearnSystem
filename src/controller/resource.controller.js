@@ -55,7 +55,7 @@ const insertResource = async (req, res) => {
         const savedResource = await resource.save();
         lesson.reference.push(savedResource._id);
         await lesson.save();
-        // console.log("done")
+        
         res.status(201).json(savedResource);
     } catch (error) {
         res.status(400).json({
@@ -81,8 +81,13 @@ const updateResource = async (req, res) => {
 }
 
 const deleteResource = async (req, res) => {
+
     try {
+        const lesson = await Lesson.findById(req.body.lessonId);
+        lesson.reference = lesson.reference.filter(resource => resource !== req.params.id);
+        await lesson.save();
         const deletedResource = await Resource.findByIdAndDelete(req.params.id)
+        console.log("in delete", req.params.id);
         res.status(200).json(deletedResource)
     } catch (error) {
         res.status(400).json({

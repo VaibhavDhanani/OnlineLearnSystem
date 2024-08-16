@@ -11,39 +11,37 @@ const Classroom = () => {
   const [error, setError] = useState(null);
   const [open, setOpen] = useState(false);
   const [subjectName, setSubjectName] = useState("");
+  
+  const fetchClasses = async () => {
+    if (!user) return;
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(`${URL}/class/student`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ codes: user.classCodes }),
+      });
 
-  useEffect(() => {
-    const fetchClasses = async () => {
-      if (!user) return;
-      const token = localStorage.getItem("token");
-      try {
-        const response = await fetch(`${URL}/class/student`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ codes: user.classCodes }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch classes");
-        }
-        
-        const data = await response.json();
-        // console.log(data)
-        setClasses(data);
-        setError(null);
-      } catch (error) {
-        console.error("Error fetching classes:", error);
-        setError("Failed to load classes. Please try again later.");
-      } finally {
-        setLoading(false);
+      if (!response.ok) {
+        throw new Error("Failed to fetch classes");
       }
-    };
-
+      
+      const data = await response.json();
+      setClasses(data);
+      setError(null);
+    } catch (error) {
+      console.error("Error fetching classes:", error);
+      setError("Failed to load classes. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
     fetchClasses();
-  }, [user, URL]);
+  }, [user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -56,19 +54,21 @@ const Classroom = () => {
         },
         body: JSON.stringify({
           subject: subjectName,
-          userId: user._id,
+          user: user,
         }),
       });
       if (!response.ok) throw new Error("Failed to create class");
       const data = await response.json();
-      console.log(data);
+      // console.log(data);
       setClasses((prevClasses) => [...prevClasses, data]);
     } catch (error) {
       console.log(error);
       alert("Failed to create class: " + error.message);
     }
+    await fetchClasses();
     setOpen(false);
     setSubjectName("");
+    window.location.reload();
   };
 
   const fields = [
@@ -106,13 +106,13 @@ const Classroom = () => {
     return <div>Error: {error}</div>;
   }
 
-  if (classes.length === 0) {
-    return <div>No classes found.</div>;
-  }
-
+  // if (classes.length === 0) {
+  //   return <div>No classes found.</div>;
+  // }
+  console.log(classes);
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6 bg-gray-100 rounded-lg shadow-inner">
-      {classes.map((classItem) => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6 rounded-lg shadow-inner">
+      {classes.length !== 0 && classes.map((classItem) => (
         <Card key={classItem._id} classData={classItem} />
       ))}
 

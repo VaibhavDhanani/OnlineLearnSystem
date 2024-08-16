@@ -3,10 +3,12 @@ import "./SignUpIn.css";
 import { URL } from "../../constant.js";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from '../../hooks/AuthContext.jsx';
 
 const SignUpIn = () => {
   const [isPanelActive, setIsPanelActive] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSignUp = () => {
     setIsPanelActive(true);
@@ -45,24 +47,25 @@ const SignUpIn = () => {
     }
   };
 
-  // console.log(`${URL}/user`)
 
   const signIn = async (event) => {
     event.preventDefault();
-    const user = {
+    try {
+    const userLogin = {
       username: event.target.username.value,
       password: event.target.password.value,
     };
-    // console.log(user);
-    try {
-      const response = await axios.post(`${URL}/user/validate`, user, {
+      const response = await axios.post(`${URL}/user/validate`, userLogin, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-      // console.log(response.data);
+     
       alert("Logged in Successfully");
-      localStorage.setItem("token", response.data.token);
+      const data  = response.data;
+      console.log(data)
+      const {token,user} = data;
+      login(token,user);
       navigate("/home");
     } catch (error) {
       console.error("Error:", error);

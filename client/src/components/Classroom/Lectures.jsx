@@ -93,38 +93,62 @@ const Lectures = ({ subject }) => {
   if (isLoading) return <p>Loading ...</p>;
 
   return (
-    <div className="container h-full mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Lessons</h1>
-      <div className="space-y-4">
+    <div className="container mx-auto px-4 py-12 min-h-screen bg-gray-50">
+      <h1 className="text-4xl font-extrabold text-indigo-900 mb-10 text-center">
+        Lessons
+      </h1>
+      <div className="max-w-4xl mx-auto space-y-6">
         {lectures.length > 0 ? (
           lectures.map((lecture) => (
             <Link
               key={lecture._id}
-              to={`/home/Mathematics/lectures/${lecture._id}`}
-              className="block bg-yellow-100 border-l-8 border-yellow-400 hover:bg-yellow-200 transition-colors duration-200 ease-in-out"
+              to={`/home/${subject}/lectures/${lecture._id}`}
+              className="block bg-white shadow-md hover:shadow-lg rounded-xl overflow-hidden transition-all duration-300 transform hover:-translate-y-1"
             >
-              <Lesson lecture={lecture} />
+              <div className="border-l-8 border-yellow-400 pl-6 py-6 pr-4">
+                <Lesson lecture={lecture} />
+              </div>
             </Link>
           ))
         ) : (
-          <p>This Class has no Lessons yet</p>
+          <p className="text-center text-gray-600 text-lg italic bg-white p-8 rounded-xl shadow-md">
+            This class has no lessons yet.
+          </p>
         )}
       </div>
       {user.type === "teacher" && (
         <div className="fixed bottom-10 right-10">
           <button
-            className="x border-green-500 border-2 bg-white text-green-500 hover:bg-green-500 hover:text-white text-base p-2 min-w-[40px] rounded-xl font-bold cursor-pointer transition-all duration-300 ease-in-out flex justify-center items-center leading-none"
+            className="bg-gradient-to-r from-green-400 to-green-600 text-white text-lg font-semibold py-3 px-6 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out flex items-center"
             onClick={() => setOpen(true)}
           >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+              />
+            </svg>
             Add Lesson
           </button>
           {open && (
-            <Form
-              title="Enter Material Details"
-              fields={fields}
-              onSubmit={handleSubmit}
-              onClose={() => setOpen(false)}
-            />
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-xl shadow-2xl w-full max-w-md">
+                <Form
+                  title="Enter Lesson Details"
+                  fields={fields}
+                  onSubmit={handleSubmit}
+                  onClose={() => setOpen(false)}
+                />
+              </div>
+            </div>
           )}
         </div>
       )}

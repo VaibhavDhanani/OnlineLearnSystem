@@ -52,7 +52,7 @@ const AssignmentView = ({ subject }) => {
         Assignment Submissions
       </h1>
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-300">
+        {assignments.length !== 0 && <table className="min-w-full bg-white border border-gray-300">
           <thead>
             <tr className="bg-gray-100">
               <th className="py-3 px-4 text-left font-semibold text-gray-600 border-b">
@@ -101,7 +101,7 @@ const AssignmentView = ({ subject }) => {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table>}
       </div>
     </div>
   );

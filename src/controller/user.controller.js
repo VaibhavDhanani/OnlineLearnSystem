@@ -2,6 +2,7 @@ import { User } from "../models/user.model.js";
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { Class } from "../models/class.model.js";
+import sendEmail from "../utils/emailService.js";
 
 const insertUser = async (req, res) => {
 
@@ -17,10 +18,19 @@ const insertUser = async (req, res) => {
         type: req.body.type,
         classCodes: [],
     })
-    // console.log(user);
     try {
-        const newUser = await user.save()
-        res.status(201).json(newUser)
+        const newUser = await user.save();
+        const classes = await Class.find({}, 'code subject');
+
+        let classDetails = "<h2>Available Classes</h2><ul>";
+        classes.forEach(cls => {
+            classDetails += `<li>Code: <strong>${cls.code}</strong> - Subject:<strong> ${cls.subject}</strong></li>`;
+        });
+        classDetails += "</ul>";
+
+        await sendEmail(newUser.email, "Information Regarding Joining the Classes", "Please find the details of the available classes below.", classDetails);
+
+        res.status(201).json(newUser);
     } catch (error) {
         console.error(error)
         res.status(400).json({
@@ -82,7 +92,7 @@ const validateUser = async (req, res) => {
         }
 
         const token = jwt.sign({ userId: user._id, username: user.username }, JWT_SECRET, { expiresIn: '1d' });
-        res.status(200).json({ token });
+        res.status(200).json({ user, token });
     } catch (error) {
         res.status(400).json({
             success: false,
@@ -122,7 +132,7 @@ const joinClass = async (req, res) => {
         classDocument.students.push(user._id);
         await classDocument.save();
         console.log("after class")
-        
+
 
         res.status(200).json({ message: 'Class joined successfully', success: true });
     } catch (error) {
@@ -131,7 +141,15 @@ const joinClass = async (req, res) => {
     }
 };
 
-
+const getStudents = async (req, res) => {
+    try {
+        const students = await User.find({ type: 'student' });
+        res.status(200).json(students);
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        res.status(500).json({ success: false, message: 'Error fetching data' });
+    }
+};
 
 export {
     insertUser,
@@ -140,4 +158,5 @@ export {
     getUser,
     validateUser,
     joinClass,
+    getStudents,
 }

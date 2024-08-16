@@ -13,17 +13,22 @@ const Assignment = ({ assignment }) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   useEffect(() => {
-    setIsSubmitted(assignment.submission.some(sub => sub.student === user._id));
+    setIsSubmitted(
+      assignment.submission.some((sub) => sub.student === user._id)
+    );
 
     const handleFullscreenChange = () => {
       setIsFullScreen(!!document.fullscreenElement);
       if (iframeRef.current) {
-        iframeRef.current.style.height = document.fullscreenElement ? "100vh" : "300px";
+        iframeRef.current.style.height = document.fullscreenElement
+          ? "100vh"
+          : "300px";
       }
     };
 
     document.addEventListener("fullscreenchange", handleFullscreenChange);
-    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    return () =>
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
   }, [assignment.submission, user._id]);
 
   const handleFileChange = async (e) => {
@@ -51,14 +56,17 @@ const Assignment = ({ assignment }) => {
     }
 
     try {
-      const response = await fetch(`${URL}/assignments/${assignment._id}/submit`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({ user, file, assignmentId: assignment._id }),
-      });
+      const response = await fetch(
+        `${URL}/assignments/${assignment._id}/submit`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ user, file, assignmentId: assignment._id }),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -86,38 +94,51 @@ const Assignment = ({ assignment }) => {
   };
 
   return (
-    <div className="w-full bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 mb-6 overflow-hidden">
+    <div className="w-full bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 mb-8 overflow-hidden">
       <div className="flex flex-col lg:flex-row">
-        <div className="lg:w-full p-6 space-y-4">
-          <h2 className="text-3xl font-bold text-gray-800">{assignment.title}</h2>
-          <p className="text-lg text-gray-600">{assignment.description}</p>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <p className="text-lg text-gray-700 font-semibold">
-                Due Date: <span className="text-blue-600">{new Date(assignment.dueDate).toLocaleDateString()}</span>
+        <div className="lg:w-full p-8 space-y-6">
+          <h2 className="text-3xl font-extrabold text-indigo-900 border-b pb-2">
+            {assignment.title}
+          </h2>
+          <p className="text-lg text-gray-700 leading-relaxed">
+            {assignment.description}
+          </p>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <p className="text-lg font-semibold">
+              Due Date:{" "}
+              <span className="text-indigo-600">
+                {new Date(assignment.dueDate).toLocaleDateString()}
+              </span>
+            </p>
+            {isSubmitted && (
+              <p className="text-lg text-green-600 bg-green-100 p-3 rounded-lg">
+                ✅ Assignment submitted successfully!
               </p>
-              {isSubmitted && (<p className="text-lg text-green-600">Assignment submitted successfully!</p>)}
-              <div>
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="file">
-                  Upload your file
-                </label>
-                <input
-                  type="file"
-                  id="file"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                  onChange={handleFileChange}
-                  required
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+            )}
+            <div>
+              <label
+                className="block text-gray-700 text-sm font-bold mb-2"
+                htmlFor="file"
               >
-                Submit
-              </button>
-            </form>
-          
+                Upload your file
+              </label>
+              <input
+                type="file"
+                id="file"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+                onChange={handleFileChange}
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-gradient-to-r from-indigo-600 to-indigo-800 text-white font-bold py-3 px-6 rounded-lg hover:from-indigo-700 hover:to-indigo-900 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transform hover:scale-105"
+            >
+              Submit Assignment
+            </button>
+          </form>
         </div>
-        <div className="lg:w-1/2 p-4 bg-gray-200 rounded-2xl m-3">
+        <div className="lg:w-1/2 p-6 bg-gray-100 rounded-2xl m-4">
           {assignment.files?.[0] && (
             <div
               ref={pdfViewerRef}
@@ -125,9 +146,9 @@ const Assignment = ({ assignment }) => {
             >
               <iframe
                 ref={iframeRef}
-                src={`https://docs.google.com/viewer?url=${encodeURIComponent(assignment.files[0])}&embedded=true`}
+                src={`https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(assignment.files[0])}`}
                 width="100%"
-                height="300px"
+                height="400px"
                 className="border-none"
               ></iframe>
               {!isFullScreen && (
@@ -135,7 +156,9 @@ const Assignment = ({ assignment }) => {
                   className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300"
                   onClick={toggleFullScreen}
                 >
-                  <span className="text-white text-lg font-semibold">Click to expand</span>
+                  <span className="text-white text-lg font-semibold bg-indigo-600 px-4 py-2 rounded-lg">
+                    Click to expand
+                  </span>
                 </div>
               )}
             </div>

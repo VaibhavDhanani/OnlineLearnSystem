@@ -3,16 +3,8 @@ import { Link } from "react-router-dom";
 
 const Sidebar = () => {
   const menuItems = [
-    { name: "Inbox", icon: "fas fa-inbox", link: "/home" },
-    { name: "Starred", icon: "fas fa-star", link: "/home" },
-    { name: "Send email", icon: "fas fa-paper-plane", link: "/home" },
-    { name: "Drafts", icon: "fas fa-file-alt", link: "/home" },
-  ];
-
-  const otherItems = [
-    { name: "All mail", icon: "fas fa-envelope", link: "#" },
-    { name: "Trash", icon: "fas fa-trash", link: "#" },
-    { name: "Spam", icon: "fas fa-exclamation-circle", link: "#" },
+    { name: "Classes", icon: "fas fa-inbox", link: "/home" },
+    { name: "Send email", icon: "fas fa-paper-plane", link: "/home/sendmails" },
   ];
 
   const renderListItems = (items) => {
@@ -30,18 +22,17 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="w-64 bg-gray-800 text-white overflow-y-auto flex-shrink-0">
+    <div className="w-64 bg-gray-900 text-white overflow-y-auto flex-shrink-0 shadow-xl">
       <nav className="p-4">
         <ul>
           <li className="mb-6">
-            <h2 className="text-lg font-semibold">Menu</h2>
+            <h2 className="text-lg font-semibold text-blue-400">Menu</h2>
           </li>
           {renderListItems(menuItems)}
         </ul>
 
-        <hr className="my-4 border-gray-600" />
+        <hr className="my-4 border-gray-700" />
 
-        <ul>{renderListItems(otherItems)}</ul>
       </nav>
     </div>
   );
