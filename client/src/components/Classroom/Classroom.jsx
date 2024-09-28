@@ -106,19 +106,16 @@ const Classroom = () => {
     return <div>Error: {error}</div>;
   }
 
-  // if (classes.length === 0) {
-  //   return <div>No classes found.</div>;
-  // }
   console.log(classes);
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6 rounded-lg shadow-inner">
-      {classes.length !== 0 && classes.map((classItem) => (
+      {classes.length !== 0 && classes.map((classItem) => ( 
         <Card key={classItem._id} classData={classItem} />
       ))}
 
       {user.type === "teacher" && (
         <button
-          className="fixed bottom-16 right-16 border-green-500 border-2 bg-white text-green-500 hover:bg-green-500 hover:text-white text-base p-2 min-w-[40px] rounded-xl font-bold cursor-pointer transition-all duration-300 ease-in-out flex justify-center items-center leading-none"
+          className="fixed bottom-12 right-12 bg-teal-500 hover:bg-teal-600 p-4 text-xl min-w-[40px] rounded-md font-bold cursor-pointer transition-all duration-300 ease-in-out flex justify-center items-center leading-none"
           onClick={() => setOpen(true)}
         >
           Add Class

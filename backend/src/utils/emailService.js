@@ -8,15 +8,11 @@ const transporter = nodemailer.createTransport({
         user: EMAIL_USER,
         pass: EMAIL_PASS
     },
-    // logger: true,
-    // debug: true,
     socketTimeout: 30000,
     dnsTimeout: 30000,
     greetingTimeout: 30000,
     connectionTimeout: 30000,
 });
-// console.log('EMAIL_USER:', EMAIL_USER);
-// console.log('EMAIL_PASS exists:', EMAIL_PASS);
 
 const sendEmail = async (to, subject, text, html) => {
     try {

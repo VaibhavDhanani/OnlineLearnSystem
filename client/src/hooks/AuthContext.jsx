@@ -11,16 +11,22 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const fetchUser = async () => {
             const token = localStorage.getItem('token');
-            if (token) {
+            const storedUser = localStorage.getItem('user');
+
+            if (token && storedUser) {
+                setUser(JSON.parse(storedUser));
+            } else if (token) {
                 try {
                     const userId = getUserByToken(token);
                     const response = await fetch(`${URL}/user/${userId}`);
                     if (!response.ok) throw new Error('Failed to fetch user');
                     const userData = await response.json();
+                    localStorage.setItem('user', JSON.stringify(userData));
                     setUser(userData);
                 } catch (error) {
                     console.error('Error fetching user:', error);
                     localStorage.removeItem('token');
+                    localStorage.removeItem('user');
                 }
             }
             setLoading(false);
@@ -28,15 +34,19 @@ export const AuthProvider = ({ children }) => {
 
         fetchUser();
     }, []);
-    
+
+
     const login = (token, userData) => {
         localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(userData));
         setUser(userData);
     };
+
 
     const logout = () => {
         setUser(null);
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
         return true;
     };
 

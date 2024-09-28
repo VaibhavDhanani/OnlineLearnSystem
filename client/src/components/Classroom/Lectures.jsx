@@ -90,36 +90,45 @@ const Lectures = ({ subject }) => {
     },
   ];
 
-  if (isLoading) return <p>Loading ...</p>;
+  if (isLoading) return (
+    <div className="flex justify-center items-center h-screen">
+      <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-indigo-500"></div>
+    </div>
+  );
 
   return (
-    <div className="container mx-auto px-4 py-12 min-h-screen bg-gray-50">
-      <h1 className="text-4xl font-extrabold text-indigo-900 mb-10 text-center">
-        Lessons
+    <div className="container mx-auto px-4 py-12 min-h-screen">
+      <h1 className="text-5xl font-extrabold text-indigo-900 mb-10 text-center">
+        <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-600">
+          Lessons
+        </span>
       </h1>
       <div className="max-w-4xl mx-auto space-y-6">
         {lectures.length > 0 ? (
           lectures.map((lecture) => (
             <Link
               key={lecture._id}
-              to={`/home/${subject}/lectures/${lecture._id}`}
-              className="block bg-white shadow-md hover:shadow-lg rounded-xl overflow-hidden transition-all duration-300 transform hover:-translate-y-1"
+              to={`/home/${subject}/lessons/${lecture._id}`}
+              className="block bg-white shadow-md hover:shadow-xl rounded-xl overflow-hidden transition-all duration-100 transform hover:-translate-y-1"
             >
-              <div className="border-l-8 border-yellow-400 pl-6 py-6 pr-4">
+              <div className="border-l-8 border-indigo-400 pl-6 py-6 pr-4">
                 <Lesson lecture={lecture} />
               </div>
             </Link>
           ))
         ) : (
-          <p className="text-center text-gray-600 text-lg italic bg-white p-8 rounded-xl shadow-md">
-            This class has no lessons yet.
-          </p>
+          <div className="text-center text-gray-600 text-lg italic bg-white p-8 rounded-xl shadow-md">
+            <svg className="mx-auto h-16 w-16 text-indigo-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+            <p>This class has no lessons yet.</p>
+          </div>
         )}
       </div>
       {user.type === "teacher" && (
         <div className="fixed bottom-10 right-10">
           <button
-            className="bg-gradient-to-r from-green-400 to-green-600 text-white text-lg font-semibold py-3 px-6 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out flex items-center"
+            className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-lg font-semibold py-3 px-6 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out flex items-center"
             onClick={() => setOpen(true)}
           >
             <svg

@@ -4,7 +4,22 @@ import Form from "../common/Form/Form";
 import { ref, uploadBytes, getDownloadURL, getStorage } from "firebase/storage";
 import { URL } from "../../constant";
 import { useAuth } from "../../hooks/AuthContext";
-import image from "../../assets/image.png";
+import { BookOpen, Clock, Trash2, PlusCircle, X } from "lucide-react";
+
+
+const Alert = ({ children, variant }) => (
+  <div className={`p-4 rounded-md ${variant === 'destructive' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}`}>
+    {children}
+  </div>
+);
+
+const AlertTitle = ({ children }) => (
+  <h3 className="font-bold mb-2">{children}</h3>
+);
+
+const AlertDescription = ({ children }) => (
+  <p>{children}</p>
+);
 
 const LectureDetail = () => {
   const lessonIdString = useParams().lectureId;
@@ -42,8 +57,6 @@ const LectureDetail = () => {
     fetchLectures();
   }, [lessonIdString]);
 
-  // console.log(lectures);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const lecture = {
@@ -80,7 +93,6 @@ const LectureDetail = () => {
     }
   };
 
-  // console.log(localStorage.getItem("token"))
   const deleteLecture = async (lecture) => {
     try {
       const response = await fetch(`${URL}/resource/delete/${lecture._id}`, {
@@ -154,131 +166,111 @@ const LectureDetail = () => {
       accept: "video/*",
     },
   ];
-  //   console.log('user:', user);
-  // console.log('lectures:', lectures);
-  // console.log('lessonIdString:', lessonIdString);
-  // console.log('token', localStorage.getItem('token'));
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (isLoading) return (
+    <div className="flex items-center justify-center h-screen bg-blue-50">
+      <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
+  );
+
+  if (error) return (
+    <Alert variant="destructive" className="m-4">
+      <AlertTitle>Error</AlertTitle>
+      <AlertDescription>{error}</AlertDescription>
+    </Alert>
+  );
 
   return (
-    <div className="container mx-auto px-4 py-12 bg-gray-100 min-h-screen">
-      <h1 className="text-4xl font-extrabold text-indigo-900 mb-5 text-center">
-        Lectures
-      </h1>
-      <div className="space-y-8 max-w-6xl mx-auto">
-        {lectures.length !== 0 ? (
-          lectures.map((lecture, index) => (
-            <div
-              key={lecture._id}
-              className="flex flex-col lg:flex-row gap-8 bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
-            >
-              <div className="w-full">
-                <div className="aspect-w-16 aspect-h-9">
-                  <video
-                    className="w-full h-full object-cover rounded-tl-xl lg:rounded-bl-xl"
-                    controls
-                  >
-                    <source src={lecture.videolink} type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
-                </div>
-              </div>
-              <div className="p-8 w-full flex flex-col justify-between">
-                <div>
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-3xl font-bold text-indigo-800">
-                      Lecture {index + 1}
-                    </h2>
-                    {user && user.type === "teacher" && (
-                      <button
-                        className="text-red-500 hover:text-red-700 transition-colors duration-200"
-                        onClick={() => deleteLecture(lecture)}
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-4xl font-extrabold text-blue-900 mb-8 text-center">
+          <BookOpen className="inline-block mr-2 mb-1" size={36} />
+          Lectures
+        </h1>
+        <div className="space-y-8">
+          {lectures.length !== 0 ? (
+            lectures.map((lecture, index) => (
+              <div
+                key={lecture._id}
+                className="bg-white rounded-md shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+              >
+                <div className="md:flex">
+                  <div className="md:flex-shrink-0 w-full md:w-2/5">
+                    <div className="aspect-w-16 aspect-h-9">
+                      <video
+                        className="w-full h-full object-cover"
+                        controls
                       >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-6 w-6"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                          />
-                        </svg>
-                      </button>
-                    )}
+                        <source src={lecture.videolink} type="video/mp4" />
+                        Your browser does not support the video tag.
+                      </video>
+                    </div>
                   </div>
-                  <h3 className="text-2xl font-semibold text-gray-700 mb-4">
-                    {lecture.title}
-                  </h3>
-                  <p className="text-gray-600 mb-6 leading-relaxed">
-                    {lecture.description}
-                  </p>
-                </div>
-                <div className="flex items-center text-sm text-gray-500">
-                  <svg
-                    className="w-5 h-5 mr-2 text-indigo-500"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  Posted on {new Date(lecture.createdAt).toLocaleDateString()}
+                  <div className="p-8 w-full md:w-3/5">
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-2xl font-bold text-blue-800">
+                        Lecture {index + 1}
+                      </h2>
+                      {user && user.type === "teacher" && (
+                        <button
+                          className="text-red-500 hover:text-red-700 transition-colors duration-200"
+                          onClick={() => deleteLecture(lecture)}
+                        >
+                          <Trash2 size={24} />
+                        </button>
+                      )}
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                      {lecture.title}
+                    </h3>
+                    <p className="text-gray-600 mb-6 leading-relaxed">
+                      {lecture.description}
+                    </p>
+                    <div className="flex items-center text-sm text-gray-500">
+                      <Clock className="mr-2" size={18} />
+                      Posted on {new Date(lecture.createdAt).toLocaleDateString()}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
-        ) : (
-          <p className="text-center text-gray-600 text-lg italic bg-white p-8 rounded-xl shadow-md">
-            No lectures available yet.
-          </p>
-        )}
-      </div>
-      {user.type === "teacher" && (
-        <div className="fixed bottom-10 right-10">
-          <button
-            className="bg-gradient-to-r from-green-400 to-green-600 text-white text-lg font-semibold py-3 px-6 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out flex items-center"
-            onClick={() => setOpen(true)}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 mr-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-              />
-            </svg>
-            Add Lecture
-          </button>
-          {open && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white rounded-xl shadow-2xl w-full max-w-md">
-                <Form
-                  title="Enter Lecture Details"
-                  fields={fields}
-                  onSubmit={handleSubmit}
-                  onClose={() => setOpen(false)}
-                />
-              </div>
+            ))
+          ) : (
+            <div className="bg-white rounded-xl shadow-md p-8 text-center">
+              <p className="text-gray-600 text-lg italic">
+                No lectures available yet. Start adding some educational content!
+              </p>
             </div>
           )}
         </div>
-      )}
+        {user && user.type === "teacher" && (
+          <div className="fixed bottom-10 right-10">
+            <button
+              className="bg-teal-500 hover:bg-teal-600 text-white text-lg font-semibold py-3 px-6 rounded-md shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out flex items-center"
+              onClick={() => setOpen(true)}
+            >
+              <PlusCircle className="mr-2" size={24} />
+              Add Lecture
+            </button>
+            {open && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-2xl font-bold text-blue-800">Enter Lecture Details</h2>
+                    <button onClick={() => setOpen(false)} className="text-gray-500 hover:text-gray-700">
+                      <X size={24} />
+                    </button>
+                  </div>
+                  <Form
+                    fields={fields}
+                    onSubmit={handleSubmit}
+                    onClose={() => setOpen(false)}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

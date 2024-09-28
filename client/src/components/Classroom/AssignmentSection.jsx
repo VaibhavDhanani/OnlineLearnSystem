@@ -119,9 +119,9 @@ const AssignmentSection = ({ subject }) => {
   // console.log(assignments);
 
   return (
-    <div className="bg-gray-100 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-extrabold text-center mb-10 text-indigo-900">
+        <h1 className="text-4xl font-extrabold text-center mb-10 text-teal-400">
           Assignments for {subject}
         </h1>
 
@@ -131,7 +131,7 @@ const AssignmentSection = ({ subject }) => {
 
             <div className="fixed bottom-10 right-10">
               <button
-                className="bg-gradient-to-r from-green-400 to-green-600 text-white text-lg font-semibold py-3 px-6 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out flex items-center"
+                className="bg-gradient-to-r from-teal-400 to-teal-600 text-white text-lg font-semibold py-3 px-6 rounded-md shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 ease-in-out flex items-center"
                 onClick={() => setOpen(true)}
               >
                 <svg

@@ -14,7 +14,7 @@ const HomeLayout = () => {
       <Navbar />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
-        <main className="flex-grow overflow-auto">
+        <main className="flex-grow bg-gray-900 overflow-auto">
           <Routes>
             <Route index element={<Classroom />} />
             <Route path=":subject/*" element={<Class />} />

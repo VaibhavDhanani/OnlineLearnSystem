@@ -4,6 +4,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { URL } from "../../constant";
 import Form from "../common/Form/Form";
 import { useAuth } from "../../hooks/AuthContext.jsx";
+import { Book, Download, Upload, X } from "lucide-react";
 
 const MaterialSection = ({ subject }) => {
   const [open, setOpen] = useState(false);
@@ -37,8 +38,8 @@ const MaterialSection = ({ subject }) => {
       alert("Failed to load materials. Please try again later.");
     }
   };
+
   useEffect(() => {
-    fetchMaterials();
     if (subject) {
       fetchMaterials();
     }
@@ -56,7 +57,6 @@ const MaterialSection = ({ subject }) => {
         return true;
       } catch (error) {
         console.error("Error uploading file:", error);
-        // alert("Error uploading file: " + error.message);
         return false;
       }
     }
@@ -81,8 +81,7 @@ const MaterialSection = ({ subject }) => {
       if (!sendMaterial.ok) {
         throw new Error(`HTTP error! status: ${sendMaterial.status}`);
       }
-      const data = await sendMaterial.json();
-      // console.log(data);
+      await sendMaterial.json();
       fetchMaterials();
       setTitle("");
       setDescription("");
@@ -137,73 +136,68 @@ const MaterialSection = ({ subject }) => {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-12 bg-gray-50">
-      <h2 className="text-4xl font-bold text-gray-800 mb-8 text-center">
-        Study Materials
-      </h2>
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <h2 className="text-4xl font-extrabold text-teal-400 mb-8 text-center flex items-center justify-center">
+          <Book className="mr-4" size={36} />
+          Study Materials for {subject}
+        </h2>
 
-      {materials.length === 0 ? (
-        <p className="text-gray-600 text-center text-lg italic">
-          No materials available at the moment.
-        </p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {materials.map((material) => (
-            <div
-              key={material.id}
-              className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
-            >
-              <div className="p-8 flex flex-col h-full">
-                <h3 className="text-2xl font-bold text-gray-800 mb-4 hover:text-blue-600 transition-colors duration-300">
-                  {material.title}
-                </h3>
-                <p className="text-gray-600 mb-6 flex-grow text-lg">
-                  {material.description}
-                </p>
-                <a
-                  href={material.file}
-                  className="inline-block bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 transform hover:scale-105 transition-all duration-300 text-center shadow-md hover:shadow-lg"
-                  download="material"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Download Material
-                </a>
+        {materials.length === 0 ? (
+          <div className="bg-white rounded-xl shadow-md p-8 text-center">
+            <p className="text-gray-600 text-lg italic">
+              No materials available for {subject} at the moment.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {materials.map((material) => (
+              <div
+                key={material.id}
+                className="text-gray-600 mb-4 hover:text-black bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-100 transform hover:-translate-y-2"
+              >
+                <div className="p-6 flex flex-col h-full">
+                  <h3 className="text-2xl font-bold transition-colors duration-300">
+                    {material.title}
+                  </h3>
+                  <p className="text-gray-600 mt-4 mb-2 flex-grow">
+                    {material.description}
+                  </p>
+                  <a
+                    href={material.file}
+                    className="inline-flex items-center justify-center bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 transform hover:scale-105 transition-all duration-300 shadow-md hover:shadow-lg"
+                    download="material"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Download className="mr-2" size={20} />
+                    Download Material
+                  </a>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
-      {user.type === "teacher" && (
-        <button
-          className="fixed bottom-8 right-8 bg-green-500 text-white hover:bg-green-600 text-lg py-3 px-6 rounded-full font-bold cursor-pointer transition-all duration-300 ease-in-out flex justify-center items-center shadow-lg hover:shadow-xl"
-          onClick={() => setOpen(true)}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 mr-2"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+            ))}
+          </div>
+        )}
+        {user.type === "teacher" && (
+          <button
+            className="fixed bottom-8 right-8 bg-teal-500 text-white hover:bg-teal-600 text-lg py-3 px-6 rounded-md font-bold cursor-pointer transition-all duration-300 ease-in-out flex justify-center items-center shadow-lg hover:shadow-xl"
+            onClick={() => setOpen(true)}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            <Upload className="mr-2" size={24} />
+            Upload Material
+          </button>
+        )}
+        {open && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <Form
+              title="Enter Material Details"
+              fields={fields}
+              onSubmit={handleSubmit}
+              onClose={() => setOpen(false)}
             />
-          </svg>
-          Upload Material
-        </button>
-      )}
-      {open && (
-        <Form
-          title="Enter Material Details"
-          fields={fields}
-          onSubmit={handleSubmit}
-          onClose={() => setOpen(false)}
-        />
-      )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

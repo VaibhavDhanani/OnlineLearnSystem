@@ -3,6 +3,7 @@ import { useAuth } from "../../hooks/AuthContext";
 import { URL } from "../../constant";
 import { storage } from "../../firebase/firebase.config";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { Calendar, Upload, CheckCircle, Maximize, Minimize } from "lucide-react";
 
 const Assignment = ({ assignment }) => {
   const [file, setFile] = useState(null);
@@ -11,6 +12,7 @@ const Assignment = ({ assignment }) => {
   const pdfViewerRef = useRef(null);
   const iframeRef = useRef(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     setIsSubmitted(
@@ -22,7 +24,7 @@ const Assignment = ({ assignment }) => {
       if (iframeRef.current) {
         iframeRef.current.style.height = document.fullscreenElement
           ? "100vh"
-          : "300px";
+          : "400px";
       }
     };
 
@@ -34,14 +36,17 @@ const Assignment = ({ assignment }) => {
   const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
+      setIsUploading(true);
       try {
         const storageRef = ref(storage, "/documents/" + selectedFile.name);
         const snapshot = await uploadBytes(storageRef, selectedFile);
         const downloadUrl = await getDownloadURL(snapshot.ref);
         setFile(downloadUrl);
+        setIsUploading(false);
         return true;
       } catch (error) {
         console.error("Error uploading file:", error);
+        setIsUploading(false);
         return false;
       }
     }
@@ -96,53 +101,54 @@ const Assignment = ({ assignment }) => {
   return (
     <div className="w-full bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 mb-8 overflow-hidden">
       <div className="flex flex-col lg:flex-row">
-        <div className="lg:w-full p-8 space-y-6">
+        <div className="lg:w-3/5 p-8 space-y-6">
           <h2 className="text-3xl font-extrabold text-indigo-900 border-b pb-2">
             {assignment.title}
           </h2>
           <p className="text-lg text-gray-700 leading-relaxed">
             {assignment.description}
           </p>
+          <div className="flex items-center text-lg font-semibold text-indigo-600">
+            <Calendar className="mr-2" />
+            <span>Due: {new Date(assignment.dueDate).toLocaleDateString()}</span>
+          </div>
+          {isSubmitted && (
+            <div className="flex items-center text-lg text-green-600 bg-green-100 p-3 rounded-lg">
+              <CheckCircle className="mr-2" />
+              Assignment submitted successfully!
+            </div>
+          )}
           <form onSubmit={handleSubmit} className="space-y-6">
-            <p className="text-lg font-semibold">
-              Due Date:{" "}
-              <span className="text-indigo-600">
-                {new Date(assignment.dueDate).toLocaleDateString()}
-              </span>
-            </p>
-            {isSubmitted && (
-              <p className="text-lg text-green-600 bg-green-100 p-3 rounded-lg">
-                ✅ Assignment submitted successfully!
-              </p>
-            )}
-            <div>
-              <label
-                className="block text-gray-700 text-sm font-bold mb-2"
-                htmlFor="file"
-              >
-                Upload your file
-              </label>
+            <div className="relative">
               <input
                 type="file"
                 id="file"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+                className="hidden"
                 onChange={handleFileChange}
                 required
               />
+              <label
+                htmlFor="file"
+                className="flex items-center justify-center w-full px-4 py-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+              >
+                <Upload className="mr-2" />
+                {file ? "File uploaded" : "Upload your file"}
+              </label>
             </div>
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-indigo-600 to-indigo-800 text-white font-bold py-3 px-6 rounded-lg hover:from-indigo-700 hover:to-indigo-900 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transform hover:scale-105"
+              className="w-full bg-gradient-to-r from-indigo-600 to-indigo-800 text-white font-bold py-3 px-6 rounded-lg hover:from-indigo-700 hover:to-indigo-900 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isSubmitted || isUploading || !file}
             >
-              Submit Assignment
+              {isUploading ? "Uploading..." : "Submit Assignment"}
             </button>
           </form>
         </div>
-        <div className="lg:w-1/2 p-6 bg-gray-100 rounded-2xl m-4">
+        <div className="lg:w-2/5 p-6 bg-gray-100">
           {assignment.files?.[0] && (
             <div
               ref={pdfViewerRef}
-              className="relative overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
+              className="relative overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
             >
               <iframe
                 ref={iframeRef}
@@ -151,16 +157,12 @@ const Assignment = ({ assignment }) => {
                 height="400px"
                 className="border-none"
               ></iframe>
-              {!isFullScreen && (
-                <div
-                  className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300"
-                  onClick={toggleFullScreen}
-                >
-                  <span className="text-white text-lg font-semibold bg-indigo-600 px-4 py-2 rounded-lg">
-                    Click to expand
-                  </span>
-                </div>
-              )}
+              <button
+                onClick={toggleFullScreen}
+                className="absolute bottom-4 right-4 bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
+              >
+                {isFullScreen ? <Minimize size={20} /> : <Maximize size={20} />}
+              </button>
             </div>
           )}
         </div>
