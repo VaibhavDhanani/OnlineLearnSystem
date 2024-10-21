@@ -34,7 +34,13 @@ const BasicModal = () => {
       const data = await response.json();
 
       if (response.ok && data.success) {
+        const userData = JSON.parse(localStorage.getItem('user'));
+        if (userData && data) {
+          userData.classCodes.push(data.code);
+          localStorage.setItem('user', JSON.stringify(userData));
+        }
         handleClose();
+        window.location.reload();
       } else {
         alert(`Failed to join the class: ${data.message}`);
       }
@@ -44,6 +50,7 @@ const BasicModal = () => {
         "An error occurred while trying to join the class. Please try again."
       );
     }
+
   };
 
   return (

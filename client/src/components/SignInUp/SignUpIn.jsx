@@ -107,7 +107,6 @@ const SignUpIn = () => {
             <span>or use your account</span>
             <input type="text" name="username" placeholder="Username" />
             <input type="password" name="password" placeholder="Password" />
-            <a href="#">Forgot your password?</a>
             <button className="sui-button" type="submit">Sign In</button>
           </form>
         </div>

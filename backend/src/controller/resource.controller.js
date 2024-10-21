@@ -84,10 +84,10 @@ const deleteResource = async (req, res) => {
 
     try {
         const lesson = await Lesson.findById(req.body.lessonId);
-        lesson.reference = lesson.reference.filter(resource => resource !== req.params.id);
+        lesson.reference = lesson.reference.filter(resource => resource.toString() !== req.params.id);
         await lesson.save();
         const deletedResource = await Resource.findByIdAndDelete(req.params.id)
-        console.log("in delete", req.params.id);
+        console.log("in delete", req.params.id,req.body.lessonId);
         res.status(200).json(deletedResource)
     } catch (error) {
         res.status(400).json({

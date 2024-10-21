@@ -1,14 +1,19 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Book, Mail } from "lucide-react";
+import { useAuth } from "../../hooks/AuthContext";
 
 const Sidebar = () => {
   const location = useLocation();
+  const {user} = useAuth();
   
   const menuItems = [
     { name: "Classes", icon: Book, link: "/home" },
-    { name: "Send email", icon: Mail, link: "/home/sendmails" },
   ];
+
+  if (user.type === "teacher") {
+      menuItems.push({ name: "Send email", icon: Mail, link: "/home/sendmails" });
+  }
 
   const renderListItems = (items) => {
     return items.map((item) => {
@@ -32,10 +37,10 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="w-64 bg-gray-950 text-white overflow-y-auto flex-shrink-0 shadow-xl">
+    <div className="w-64 bg-gray-950 overflow-y-auto flex-shrink-0 shadow-xl">
       <nav className="p-6">
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-transparent bg-clip-text text-teal-400">
+          <h2 className="text-2xl font-bold bg-clip-text text-teal-400">
             Dashboard
           </h2>
         </div>

@@ -134,7 +134,7 @@ const joinClass = async (req, res) => {
         console.log("after class")
 
 
-        res.status(200).json({ message: 'Class joined successfully', success: true });
+        res.status(200).json({ message: 'Class joined successfully', success: true,code: classCode });
     } catch (error) {
         console.error('Error in joinClass:', error);
         res.status(500).json({ message: 'Internal server error', error: error.message, stack: error.stack });

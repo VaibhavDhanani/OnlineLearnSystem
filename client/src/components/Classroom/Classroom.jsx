@@ -41,7 +41,7 @@ const Classroom = () => {
   };
   useEffect(() => {
     fetchClasses();
-  }, [user]);
+  }, [user,loading]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -59,7 +59,12 @@ const Classroom = () => {
       });
       if (!response.ok) throw new Error("Failed to create class");
       const data = await response.json();
-      // console.log(data);
+      const userData = JSON.parse(localStorage.getItem('user'));
+        if (userData && data) {
+          userData.classCodes.push(data.code);
+          localStorage.setItem('user', JSON.stringify(userData));
+        }
+        
       setClasses((prevClasses) => [...prevClasses, data]);
     } catch (error) {
       console.log(error);
@@ -110,7 +115,7 @@ const Classroom = () => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6 rounded-lg shadow-inner">
       {classes.length !== 0 && classes.map((classItem) => ( 
-        <Card key={classItem._id} classData={classItem} />
+        classItem !== null && <Card key={classItem._id} classData={classItem} />
       ))}
 
       {user.type === "teacher" && (

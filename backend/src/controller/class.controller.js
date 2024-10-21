@@ -1,6 +1,10 @@
-import { Class } from "../models/class.model.js";
-import { User } from "../models/user.model.js";
-
+import mongoose from 'mongoose';
+import { Class } from '../models/class.model.js';
+import { User } from '../models/user.model.js';
+import { Lesson } from '../models/lesson.model.js';
+import { Material } from '../models/material.model.js';
+import { Resource } from '../models/resource.model.js';
+import { Announcement } from '../models/announcement.model.js';
 
 const usedCodes = new Set();
 function generateRandomCode() {
@@ -29,7 +33,7 @@ const getClasses = async (req, res) => {
             const reqClass = await Class.findOne({ code });
             return reqClass;
         }));
-        //   console.log(classCodes)
+          console.log(classes)
 
         res.status(200).json(classes);
     } catch (error) {
@@ -92,32 +96,60 @@ const updateClass = async (req, res) => {
 }
 
 const deleteClass = async (req, res) => {
-    try {
-        const classId = req.params.id;
-        const deletedClass = await Class.findById(classId);
-        if (!deletedClass) {
-            return res.status(404).json({
-                success: false,
-                message: "Class not found",
-            });
-        }
-        const updatedUsers = await User.updateMany(
-            { classCodes: deletedClass.code },
-            { $pull: { classCodes: deletedClass.code } }
-        );
-        await Class.findByIdAndDelete(classId);
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-        res.status(200).json({
-            success: true,
-            message: "Class deleted successfully and removed from all users",
-        });
-    } catch (error) {
-        console.error("Error deleting class:", error);
-        res.status(500).json({
-            success: false,
-            message: "An error occurred while deleting the class",
-        });
+  try {
+    const classId = req.params.id;
+    const deletedClass = await Class.findById(classId).session(session);
+
+    if (!deletedClass) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({
+        success: false,
+        message: "Class not found",
+      });
     }
+
+    await User.updateMany(
+      { _id: { $in: [...deletedClass.students, deletedClass.teacher] } },
+      { $pull: { classCodes: deletedClass.code } },
+      { session }
+    );
+
+    const lessons = await Lesson.find({ class: classId }).session(session);
+    const lessonIds = lessons.map(lesson => lesson._id);
+
+    await Resource.deleteMany({ lesson: { $in: lessonIds } }, { session });
+
+    await Lesson.deleteMany({ class: classId }, { session });
+
+    await Material.deleteMany({ class: classId }, { session });
+
+    const announcements = await Announcement.find({ _id: { $in: deletedClass.announcements } }).session(session);
+    for (const announcement of announcements) {
+      await Announcement.findByIdAndDelete(announcement._id, { session });
+    }
+
+    await Class.findByIdAndDelete(classId, { session });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(200).json({
+      success: true,
+      message: "Class and all related data deleted successfully",
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    console.error("Error deleting class and related data:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while deleting the class and related data",
+    });
+  }
 };
 
 export { getClasses, insertClass, updateClass, deleteClass };

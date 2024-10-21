@@ -4,13 +4,14 @@ import { URL } from "../../../constant.js";
 import { useAuth } from "../../../hooks/AuthContext.jsx";
 
 const Card = ({ classData }) => {
-  const { subject, description } = classData;
+  const { subject } = classData;
   const navigate = useNavigate();
   const { user } = useAuth();
 
   const handleExploreClick = () => {
     navigate(`/home/${subject}`);
   };
+  
 
   const handleDelete = async () => {
     try {
@@ -21,7 +22,18 @@ const Card = ({ classData }) => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      console.log("deleted successfully");
+  
+      if (response.ok) {
+        console.log("Deleted successfully");
+        const userData = JSON.parse(localStorage.getItem('user'));
+        if (userData && userData.classCodes ) {
+          userData.classCodes = userData.classCodes.filter(code => code !== classData.code);
+          console.log(userData.classCodes)
+          localStorage.setItem('user', JSON.stringify(userData));
+        }
+      } else {
+        console.log("Delete failed");
+      }
     } catch (error) {
       console.log(error);
     }

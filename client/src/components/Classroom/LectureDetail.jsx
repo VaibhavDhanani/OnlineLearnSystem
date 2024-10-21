@@ -14,7 +14,7 @@ const Alert = ({ children, variant }) => (
 );
 
 const AlertTitle = ({ children }) => (
-  <h3 className="font-bold mb-2">{children}</h3>
+  <h3 className="font-bold mb-2">{children}</h3>  
 );
 
 const AlertDescription = ({ children }) => (
@@ -261,6 +261,7 @@ const LectureDetail = () => {
                     </button>
                   </div>
                   <Form
+                    title="Add Lecture"
                     fields={fields}
                     onSubmit={handleSubmit}
                     onClose={() => setOpen(false)}

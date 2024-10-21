@@ -5,7 +5,7 @@
 }
 
 .sui-login-body {
-    background: #f6f5f7;
+    background: #1A1A2E;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -13,11 +13,13 @@
     font-family: 'Montserrat', sans-serif;
     height: 100vh;
     margin: -20px 0 50px;
+    color: #fff;
 }
 
 .sui-login-body h1 {
     font-weight: bold;
     margin: 0;
+    color: #eee;
 }
 
 .sui-login-body h2 {
@@ -45,9 +47,9 @@
 
 .sui-button {
     border-radius: 20px;
-    border: 1px solid #FF4B2B;
-    background-color: #FF4B2B;
-    color: #FFFFFF;
+    border: 1px solid #00FFDD;
+    background-color: #00FFDD;
+    color: #FFF;
     font-size: 12px;
     font-weight: bold;
     padding: 12px 45px;
@@ -66,11 +68,11 @@
 
 .sui-button.sui-ghost {
     background-color: transparent;
-    border-color: #FFFFFF;
+    border-color: #00FFDD;
 }
 
 .sui-login-body form {
-    background-color: #FFFFFF;
+    background-color: #16213E;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -78,11 +80,13 @@
     padding: 0 50px;
     height: 100%;
     text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
 .sui-login-body input,
 .sui-login-body select {
-    background-color: #eee;
+    background-color: #1F4068;
+    color: #FFF;
     border: none;
     padding: 12px 15px;
     margin: 8px 0;
@@ -90,7 +94,7 @@
 }
 
 .sui-container {
-    background-color: #fff;
+    background-color: #0F3460;
     border-radius: 10px;
     box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
     position: relative;
@@ -159,9 +163,9 @@
 }
 
 .sui-overlay {
-    background: #FF416C;
-    background: -webkit-linear-gradient(to right, #FF4B2B, #FF416C);
-    background: linear-gradient(to right, #FF4B2B, #FF416C);
+    background: #00FFDD;
+    background: -webkit-linear-gradient(to right,#1F4068, #00FFDD);
+    background: linear-gradient(to right, #00FFDD, #1F4068);
     background-repeat: no-repeat;
     background-size: cover;
     background-position: 0 0;
