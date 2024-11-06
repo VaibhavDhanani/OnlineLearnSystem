@@ -49,12 +49,12 @@ const getClasses = async (req, res) => {
 const insertClass = async (req, res) => {
 
     try {
-        const { user, subject } = req.body;
+        const { user, subject,code } = req.body;
+
         console.log('Extracted user and subject:', { user, subject });
         if (!user || !user._id || !subject) {
             throw new Error('Invalid user or subject data');
         }
-        const code = getUniqueCode();
         console.log('Creating new class with:', { teacher: user._id, subject, code });
         const newClass = new Class({
             teacher: user._id,

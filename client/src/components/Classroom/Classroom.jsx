@@ -11,8 +11,9 @@ const Classroom = () => {
   const [error, setError] = useState(null);
   const [open, setOpen] = useState(false);
   const [subjectName, setSubjectName] = useState("");
+  const [subjectCode,setSubjectCode] = useState("");
   
-  const fetchClasses = async () => {
+  const fetchClasses =   async () => {
     if (!user) return;
     const token = localStorage.getItem("token");
     try {
@@ -53,12 +54,13 @@ const Classroom = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({
+          code: subjectCode,
           subject: subjectName,
           user: user,
         }),
       });
-      if (!response.ok) throw new Error("Failed to create class");
       const data = await response.json();
+      if (!response.ok) throw new Error(data.message);
       const userData = JSON.parse(localStorage.getItem('user'));
         if (userData && data) {
           userData.classCodes.push(data.code);
@@ -94,6 +96,16 @@ const Classroom = () => {
       placeholder: "Enter subject name",
       value: subjectName,
       onChange: (value) => setSubjectName(value),
+      required: true,
+      disabled: false,
+    },
+    {
+      id: "code",
+      label: "code",
+      type: "text",
+      placeholder: "Enter subject code of size 10",
+      value: subjectCode,
+      onChange: (value) => setSubjectCode(value),
       required: true,
       disabled: false,
     },

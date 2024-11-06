@@ -70,7 +70,7 @@ const Lectures = ({ subject }) => {
   const fields = [
     {
       id: "subject",
-      label: "Class Code",
+      label: "Class",
       type: "text",
       placeholder: "Subject",
       value: subject,
