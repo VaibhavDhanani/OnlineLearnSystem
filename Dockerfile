@@ -1,24 +1,17 @@
-# Build stage for frontend
-FROM node:18-alpine as frontend
-WORKDIR /app/client
-COPY client/package*.json ./
-RUN npm install
-COPY client/ ./
-# Update the constant.js with production URL during build
-RUN sed -i "s|http://localhost:3000|https://${RAILWAY_STATIC_URL}|g" src/constant.js
-RUN npm run build
+FROM node:18-alpine
 
-# Production stage for backend
-FROM node:18-alpine as backend
-WORKDIR /app/backend
-COPY backend/package*.json ./
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
 RUN npm install
-COPY backend/ ./
-COPY --from=frontend /app/client/dist ./public
+
+# Copy backend source and public files
+COPY . .
 
 # Expose port
 ENV PORT=3000
 EXPOSE 3000
 
-# Start backend server
+# Start the server
 CMD ["npm", "start"]
