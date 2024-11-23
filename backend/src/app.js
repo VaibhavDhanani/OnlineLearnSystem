@@ -81,13 +81,12 @@ app.post("/api/v1/sendemail", async (req, res) => {
 app.use(express.static(path.join(__dirname, '../public')));
 
 // Important: Add this route to handle client-side routing
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
-});
+const publicPath = path.join(__dirname, '../public');
+app.use(express.static(publicPath));
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'An unexpected error occurred' });
+// Handle React routing
+app.get('*', (req, res) => {
+    res.sendFile(path.join(publicPath, 'index.html'));
 });
 
 
