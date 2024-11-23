@@ -1,3 +1,9 @@
 backend/node_modules
 backend/.env
 client/node_modules
+node_modules/
+.env
+dist/
+build/
+client/node_modules/
+backend/node_modules/

@@ -22,7 +22,7 @@ emitter.setMaxListeners(20);
 
 // Middleware
 app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 // CORS configuration
@@ -72,5 +72,15 @@ app.post("/api/v1/sendemail", async (req, res) => {
     res.status(500).json({ message: 'Failed to send email' });
   }
 })
+
+
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, '../public')));
+
+// Important: Add this route to handle client-side routing
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'));
+});
+
 
 export default app;
