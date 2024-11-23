@@ -12,6 +12,11 @@ import lessonRouter from './routes/lesson.routes.js';
 import assignmentRouter from './routes/assignment.routes.js';
 import announcementRouter from './routes/announcement.routes.js';
 import sendEmail from './utils/emailService.js';
+import { fileURLToPath } from 'url';  // Add this import
+
+// Get __dirname equivalent in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 
 dotenv.config();
@@ -55,10 +60,7 @@ app.use("/api/v1/assignments", assignmentRouter);
 app.use("/api/v1/announcement", announcementRouter);
 
 // Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'An unexpected error occurred' });
-});
+
 
 app.post("/api/v1/sendemail", async (req, res) => {
   try {
@@ -81,6 +83,11 @@ app.use(express.static(path.join(__dirname, '../public')));
 // Important: Add this route to handle client-side routing
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'An unexpected error occurred' });
 });
 
 
