@@ -1,13 +1,18 @@
 FROM node:18-alpine
 
-WORKDIR /app
+WORKDIR /app/backend
 
-# Copy package files
-COPY package*.json ./
+# Copy package.json and package-lock.json
+COPY backend/package*.json ./
+
+# Install dependencies
 RUN npm install
 
-# Copy backend source and public files
-COPY . .
+# Copy backend source code
+COPY backend/ ./
+
+# If you have already built and copied the frontend dist files to public/
+# COPY backend/public/ ./public/
 
 # Expose port
 ENV PORT=3000

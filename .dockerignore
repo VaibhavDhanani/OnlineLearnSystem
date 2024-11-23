@@ -1,4 +1,7 @@
-node_modules
-.env
-.git
-.gitignore
+**/node_modules
+**/.env
+**/.git
+**/.gitignore
+client/
+# Don't ignore the public folder since it contains our built frontend
+!backend/public/
